@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-5-3",
+    "name": "⑤-③LIKEの使い方",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ファーストネームがJで始まる従業員リスト\nSELECT\n  *\nFROM\n  employees\nWHERE\n  first_name LIKE 'J%'",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

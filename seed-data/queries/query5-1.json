@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-5-1",
+    "name": "⑤-①使ってみようWHERE",
+    "connectionId": "seed-connection-1",
+    "queryText": "--注文日2024-04-01の件数取得\nSELECT\n  count(*)\nFROM\n  orders\nWHERE\n  order_date = '2024-04-01'",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

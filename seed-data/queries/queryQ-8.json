@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-8",
+    "name": "練習問題Q-8",
+    "connectionId": "seed-connection-1",
+    "queryText": "--employeesテーブルから、hire_dateが最も新しい従業員のfirst_nameとlast_nameを抽出します\nSELECT first_name, last_name FROM employees ORDER BY hire_date DESC LIMIT 1",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-10",
+    "name": "練習問題Q-10",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ordersテーブルから、total_amountが500以上の注文を行っているcustomer_nameを抽出します。重複は排除して下さい\nSELECT DISTINCT customer_name FROM orders WHERE total_amount >= 500",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

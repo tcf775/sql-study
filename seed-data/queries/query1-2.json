@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-1-2",
+    "name": "①-②列指定は省略できる。が…",
+    "connectionId": "seed-connection-1",
+    "queryText": "--列指定せずに全件取得\nSELECT\n  *\nFROM\n  products",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

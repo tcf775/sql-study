@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-6-1",
+    "name": "⑥-①使ってみようORDER BY",
+    "connectionId": "seed-connection-1",
+    "queryText": "--製品情報を単価の高い順に並び替える\nSELECT\n  *\nFROM\n  products\nORDER BY\n  unit_price desc",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-3",
+    "name": "練習問題Q-3",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ordersテーブルから、order_dateが2024年1月1日以降の注文を抽出してください\nSELECT * FROM orders WHERE order_date >= '2024-01-01'",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-1-5",
+    "name": "①-⑤定数値を表示することもできる",
+    "connectionId": "seed-connection-1",
+    "queryText": "--定数値を表示するサンプル\nSELECT  'サンプル' AS タイプ\n  ,product_name AS 製品名\n  ,unit_price AS 単価\nFROM products",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

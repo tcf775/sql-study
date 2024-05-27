@@ -1,0 +1,9 @@
+{
+    "id": "seed-connection-1",
+    "name": "SQL勉強会第１回",
+    "driver": "postgres",
+    "host": "sql-study-postgres",
+    "database": "postgres",
+    "username": "postgres",
+    "password": "postgres"
+  }

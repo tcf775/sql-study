@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-5-2",
+    "name": "⑤-②BETWEENの使い方",
+    "connectionId": "seed-connection-1",
+    "queryText": "--単価が100以上120以下の製品\nSELECT\n  *\nFROM\n  products\nWHERE\n  unit_price BETWEEN 100 AND 120",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

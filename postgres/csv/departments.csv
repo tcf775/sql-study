@@ -1,0 +1,21 @@
+department_id,department_name,location
+1,Sales,New York
+2,Marketing,Los Angeles
+3,IT,Chicago
+4,Finance,Seattle
+5,HR,Boston
+6,Operations,Atlanta
+7,Customer Service,Dallas
+8,Research & Development,San Francisco
+9,Accounting,Miami
+10,Legal,Washington D.C.
+11,Supply Chain,Houston
+12,Project Management,Denver
+13,Quality Assurance,Phoenix
+14,Training,Portland
+15,Facilities,Minneapolis
+16,Security,Detroit
+17,Public Relations,Nashville
+18,Business Development,Tampa
+19,Data Analytics,Seattle
+20,Human Resources,Boston

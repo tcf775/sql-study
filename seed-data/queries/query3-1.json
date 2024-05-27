@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-3-1",
+    "name": "③-①やってみようGROUP BY",
+    "connectionId": "seed-connection-1",
+    "queryText": "--従業員情報から各部署ごとの平均給与を算出する\nSELECT\n  department_id\n  ,avg(salary)\nFROM employees\nGROUP BY department_id",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

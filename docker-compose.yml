@@ -1,0 +1,27 @@
+version: '3'
+services:
+  sql-study-postgres:
+    container_name: sql-study-postgres
+    #image: 671951117267.dkr.ecr.ap-northeast-1.amazonaws.com/sql-study
+    build:
+      context: ./postgres/
+      dockerfile: Dockerfile
+    #restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  sql-study-pad:
+    # To use Dockerfile at root of this project, use build instead of image
+    # build: ../../
+    image: sqlpad/sqlpad:5
+    hostname: 'sqlpad'
+    ports:
+      - '3000:3000'
+    environment:
+      SQLPAD_ADMIN: #admin_email
+      SQLPAD_ADMIN_PASSWORD: #admin_password
+      SQLPAD_APP_LOG_LEVEL: debug
+      SQLPAD_WEB_LOG_LEVEL: warn
+      SQLPAD_SEED_DATA_PATH: /etc/sqlpad/seed-data
+    volumes:
+      - ./seed-data:/etc/sqlpad/seed-data

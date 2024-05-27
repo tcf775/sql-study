@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-12",
+    "name": "練習問題Q-12",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ordersテーブルから、各customer_nameごとの注文数を抽出し、注文数が多い順に並べてください。ただし、結果は最初の5行だけを表示します。\nSELECT customer_name, COUNT(*) FROM orders GROUP BY customer_name ORDER BY COUNT(*) DESC LIMIT 5",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

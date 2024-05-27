@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-6",
+    "name": "練習問題Q-6",
+    "connectionId": "seed-connection-1",
+    "queryText": "--employeesテーブルから、department_idが1の全ての従業員を選択します\nSELECT * FROM employees WHERE department_id = 1",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

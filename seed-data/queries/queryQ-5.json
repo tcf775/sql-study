@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-5",
+    "name": "練習問題Q-5",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ordersテーブルから、合計注文量が40以上のproduct_idを抽出して下さい\nSELECT product_id FROM orders GROUP BY product_id HAVING SUM(quantity) >= 40",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

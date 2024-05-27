@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-4",
+    "name": "練習問題Q-4",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ordersテーブルから、各product_idごとの合計注文量を抽出して下さい\nSELECT product_id, SUM(quantity) FROM orders GROUP BY product_id",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

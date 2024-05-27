@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-1-3",
+    "name": "①-③取得件数を抑えるLIMIT",
+    "connectionId": "seed-connection-1",
+    "queryText": "--取得件数を抑えるLIMIT\nSELECT\n  *\nFROM\n  products\nLIMIT 5",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

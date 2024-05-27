@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-1-4",
+    "name": "①-④ヘッダが分かりづらいな…ってとき",
+    "connectionId": "seed-connection-1",
+    "queryText": "--ヘッダに別名を付けてわかりやすく\nSELECT\n  product_name AS 製品名\n  ,unit_price AS 単価\nFROM\n  products",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

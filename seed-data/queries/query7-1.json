@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-7-1",
+    "name": "⑦-①そんな時にHAVINGの出番",
+    "connectionId": "seed-connection-1",
+    "queryText": "--従業員リストから平均給与が５万円を超える部署を抽出する\nSELECT\n  department_id\n  ,avg(salary)\nFROM employees\nGROUP BY department_id\nHAVING avg(sarary) > 50000",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

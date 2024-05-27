@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-2",
+    "name": "練習問題Q-2",
+    "connectionId": "seed-connection-1",
+    "queryText": "--Productsテーブルからunit_priceの高い順で１０商品表示して下さい\nSELECT * FROM products ORDER BY unit_price DESC LIMIT 10",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

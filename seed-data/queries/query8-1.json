@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-8-1",
+    "name": "⑧-①使ってみようCASE",
+    "connectionId": "seed-connection-1",
+    "queryText": "--給与が５万円を超えている従業員に★をつける\nSELECT\n  case\n    when salary > 50000 then '★'\n    else ''\n  end,\n  *\nFROM\n  employees",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

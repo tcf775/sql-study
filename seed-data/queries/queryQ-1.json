@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-q-1",
+    "name": "練習問題Q-1",
+    "connectionId": "seed-connection-1",
+    "queryText": "--employeesテーブルから全ての従業員のfirst_nameとlast_nameを選択します\nselect first_name as 名, last_name as 姓  FROM employees;",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

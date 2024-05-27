@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-2-1",
+    "name": "②-①細かいことは良いので使ってみよう集合関数",
+    "connectionId": "seed-connection-1",
+    "queryText": "--従業員情報から、数・給与合計・最大給与・最小給与・平均給与を算出する\nSELECT\n  count(*)\n  ,sum(salary)\n  ,max(salary)\n  ,min(salary)\n  ,avg(salary)\nFROM employees",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

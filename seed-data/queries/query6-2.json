@@ -1,0 +1,13 @@
+{
+    "id": "seed-query-6-2",
+    "name": "⑥-②並び替える基準項目は複数指定できます。",
+    "connectionId": "seed-connection-1",
+    "queryText": "--従業員リストを誕生日の速い順に並び替え、かつ給与の高い順に並び替える\nSELECT\n  *\nFROM\n  employees\nORDER BY\n  hire_date,\n  salary desc",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }
