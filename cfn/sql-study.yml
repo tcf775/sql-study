@@ -77,7 +77,7 @@ Resources:
       ImageId: ami-02a405b3302affc24 # amazon linux 2023
       InstanceType: t2.micro
       SubnetId: !Ref SqlStudyPublicSubnet
-      IamInstanceProfile: !Ref 
+      IamInstanceProfile: !Ref SqlStudyInstanceProfile
       SecurityGroupIds:
       - !GetAtt SqlStudySecurityGroup.GroupId
       UserData:
