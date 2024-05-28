@@ -1,3 +1,6 @@
+CREATE ROLE study_role WITH LOGIN PASSWORD 'password';
+GRANT CONNECT ON DATABASE postgres TO study_role;
+
 -- 従業員テーブル
 CREATE TABLE employees (
 employee_id SERIAL PRIMARY KEY,
@@ -42,6 +45,8 @@ order_date DATE NOT NULL,
 total_amount NUMERIC(10,2) NOT NULL,
 FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO study_role;
 
 COPY employees FROM '/csv/employees.csv' DELIMITER ',' CSV HEADER;
 COPY departments FROM '/csv/departments.csv' DELIMITER ',' CSV HEADER;

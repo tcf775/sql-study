@@ -8,6 +8,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
   sql-study-pad:
     image: sqlpad/sqlpad:5
     hostname: 'sqlpad'
@@ -21,3 +23,4 @@ services:
       SQLPAD_SEED_DATA_PATH: /etc/sqlpad/seed-data
     volumes:
       - ./seed-data:/etc/sqlpad/seed-data
+      - ./sqlpad_data:/var/lib/sqlpad
