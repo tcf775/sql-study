@@ -49,4 +49,4 @@ employee_id,first_name,last_name,email,department_id,hire_date,salary
 48,Ava,Robles,ava.robles@example.com,3,2018-03-01,47000.00
 49,Benjamin,Montes,benjamin.montes@example.com,2,2020-08-01,49000.00
 50,Emma,Medina,emma.medina@example.com,4,2019-05-15,48000.00
-51,Oliver,Medina,oliver.medina@example.com,4,2019-05-20,44000.00
+51,Oliver,Medina,oliver.medina@example.com,0,2019-05-20,44000.00
