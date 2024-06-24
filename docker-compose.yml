@@ -10,6 +10,16 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+  sql-study-postgres2:
+    container_name: sql-study-postgres2
+    build:
+      context: ./postgres2/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres2_data:/var/lib/postgresql/data
   sql-study-pad:
     image: sqlpad/sqlpad:5
     hostname: 'sqlpad'

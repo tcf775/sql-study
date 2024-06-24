@@ -1,0 +1,13 @@
+{
+    "id": "002-seed-query-q-002",
+    "name": "第２回_練習問題Q-002",
+    "connectionId": "seed-connection-2",
+    "queryText": "SELECT \n  products.category\n  , sum(inventory.quantity_in_stock * products.unit_price) AS inventory_amount\nFROM \n  products \n  JOIN inventory ON products.product_id = inventory.inventory_id \nGROUP BY products.category",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

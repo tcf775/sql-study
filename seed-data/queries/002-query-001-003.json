@@ -1,0 +1,13 @@
+{
+    "id": "002-seed-query-001-003",
+    "name": "第２回_①-③従業員テーブルを見てみます。",
+    "connectionId": "seed-connection-2",
+    "queryText": "SELECT \n  *\nFROM \n  employees\nORDER BY employee_id desc",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

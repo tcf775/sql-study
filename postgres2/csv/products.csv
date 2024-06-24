@@ -1,0 +1,31 @@
+product_id,product_name,category,unit_price
+1,Product A,Electronics,100.00
+2,Product B,Office Supplies,150.00
+3,Product C,Electronics,120.00
+4,Product D,Home Goods,150.00
+5,Product E,Office Supplies,80.00
+6,Product F,Electronics,90.00
+7,Product G,Home Goods,100.00
+8,Product H,Office Supplies,130.00
+9,Product I,Electronics,110.00
+10,Product J,Home Goods,160.00
+11,Product K,Office Supplies,95.00
+12,Product L,Electronics,105.00
+13,Product M,Home Goods,140.00
+14,Product N,Office Supplies,125.00
+15,Product O,Electronics,115.00
+16,Product P,Home Goods,155.00
+17,Product Q,Office Supplies,85.00
+18,Product R,Electronics,95.00
+19,Product S,Home Goods,120.00
+20,Product T,Office Supplies,135.00
+21,Product U,Electronics,100.00
+22,Product V,Home Goods,145.00
+23,Product W,Office Supplies,90.00
+24,Product X,Electronics,110.00
+25,Product Y,Home Goods,130.00
+26,Product Z,Office Supplies,120.00
+27,Product AA,Electronics,105.00
+28,Product BB,Home Goods,150.00
+29,Product CC,Office Supplies,100.00
+30,Product DD,Electronics,115.00

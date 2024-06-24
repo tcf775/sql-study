@@ -1,6 +1,6 @@
 {
-    "id": "seed-query-1-1",
-    "name": "①-①まずは実行してみようSQL",
+    "id": "001-seed-query-1-1",
+    "name": "第１回_①-①まずは実行してみようSQL",
     "connectionId": "seed-connection-1",
     "queryText": "SELECT\n  product_name\n  ,unit_price\nFROM\n  products",
     "createdBy": "a.saito@renk.co.jp",

@@ -1,0 +1,13 @@
+{
+    "id": "002-seed-query-q-003",
+    "name": "第２回_練習問題Q-003",
+    "connectionId": "seed-connection-2",
+    "queryText": "SELECT \n  products.product_id AS \"製品ID\"\n  , products.product_name AS \"製品名\"\n  , products.unit_price AS \"単価\"\n  , inventory.quantity_in_stock AS \"5/31在庫数\"\n  , inventory.quantity_in_stock * products.unit_price AS \"5/31在庫金額\"\n  , orders.quantity AS \"6/1受注数\"\n  , inventory.quantity_in_stock - orders.quantity AS \"6/1在庫数\"\n  , (inventory.quantity_in_stock - orders.quantity) * products.unit_price AS \"6/1在庫金額\"\nFROM \n  inventory \n  JOIN products ON inventory.product_id = products.product_id\n  JOIN orders ON orders.order_date = '2024-06-01' AND inventory.product_id = orders.product_id\n  order by order_date desc;",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

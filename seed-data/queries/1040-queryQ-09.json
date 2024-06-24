@@ -1,6 +1,6 @@
 {
-    "id": "seed-query-q-9",
-    "name": "練習問題Q-9",
+    "id": "001-seed-query-q-9",
+    "name": "第１回_練習問題Q-9",
     "connectionId": "seed-connection-1",
     "queryText": "--ordersテーブルから、各customer_nameごとの最大total_amountを抽出します\nSELECT customer_name, MAX(total_amount) FROM orders GROUP BY customer_name",
     "createdBy": "a.saito@renk.co.jp",

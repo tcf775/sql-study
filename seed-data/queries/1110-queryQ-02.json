@@ -1,6 +1,6 @@
 {
-    "id": "seed-query-q-2",
-    "name": "練習問題Q-2",
+    "id": "001-seed-query-q-2",
+    "name": "第１回_練習問題Q-2",
     "connectionId": "seed-connection-1",
     "queryText": "--Productsテーブルからunit_priceの高い順で１０商品表示して下さい\nSELECT * FROM products ORDER BY unit_price DESC LIMIT 10",
     "createdBy": "a.saito@renk.co.jp",

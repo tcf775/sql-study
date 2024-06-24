@@ -1,0 +1,13 @@
+{
+    "id": "002-seed-query-001-002",
+    "name": "第２回_①-②実は先程の結果では従業員が一人除外されています。",
+    "connectionId": "seed-connection-2",
+    "queryText": "SELECT \n  e.employee_id\n  ,e.first_name\n  , e.last_name\n  , e.email\n  , d.department_name \n  , d.location\nFROM \n  employees e\n  JOIN departments d \n    ON e.department_id = d.department_id",
+    "createdBy": "a.saito@renk.co.jp",
+    "acl": [
+      {
+        "groupId": "__EVERYONE__",
+        "read": true
+      }
+    ]
+  }

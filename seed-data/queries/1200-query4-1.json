@@ -1,6 +1,6 @@
 {
-    "id": "seed-query-4-1",
-    "name": "④-①どういうときに使うか…",
+    "id": "001-seed-query-4-1",
+    "name": "第１回_④-①どういうときに使うか…",
     "connectionId": "seed-connection-1",
     "queryText": "--製品情報に存在しているカテゴリの種類をカウントする\nSELECT\n  COUNT(*) as category\n  ,COUNT(category) as count_category\n  ,COUNT(DISTINCT category) as distinct_category\nFROM\n  products",
     "createdBy": "a.saito@renk.co.jp",
