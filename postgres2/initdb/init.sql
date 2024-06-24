@@ -24,7 +24,8 @@ CREATE TABLE products (
 product_id SERIAL PRIMARY KEY,
 product_name VARCHAR(100) NOT NULL,
 category VARCHAR(50) NOT NULL,
-unit_price NUMERIC(10,2) NOT NULL
+unit_price NUMERIC(10,2) NOT NULL,
+department_id INTEGER NOT NULL
 );
 
 -- 在庫テーブル

@@ -1,5 +1,5 @@
 {
-    "id": "002-seed-query-003-001",
+    "id": "002-seed-query-004-002",
     "name": "第２回_④-②NATURAL JOIN（自然結合）",
     "connectionId": "seed-connection-2",
     "queryText": "SELECT \n  e.first_name\n  , e.last_name\n  , e.email\n  , d.department_name \n  , d.location\nFROM \n  employees AS e\n  NATURAL JOIN departments AS d \nLIMIT 10;",
