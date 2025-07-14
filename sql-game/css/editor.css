@@ -1,0 +1,109 @@
+#sql-editor {
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 100%;
+    min-height: 150px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+#sql-editor:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+#sql-editor::placeholder {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.editor-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #718096;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.btn-close:hover {
+    background-color: #f7fafc;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.panel-content {
+    background: #f7fafc;
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+}
+
+.editor-container {
+    position: relative;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f7fafc;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+    background: #e6fffa;
+}
+
+.suggestion-keyword {
+    color: #3182ce;
+    font-weight: bold;
+}
+
+.suggestion-table {
+    color: #38a169;
+}
+
+.suggestion-column {
+    color: #d69e2e;
+}

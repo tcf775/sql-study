@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: "StudySQLHandsOn on EC2"
+AWSTemplateFormatVersion: '2010-09-09'
+Description: StudySQLHandsOn on EC2
 
 Parameters:
   AdminEmail:
@@ -15,9 +15,8 @@ Parameters:
     Type: String
     Description: The CIDR block for the Subnet
 
-
 Resources:
-# VPC
+  # VPC
   SqlStudyVPC:
     Type: AWS::EC2::VPC
     Properties:
@@ -25,39 +24,39 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-VPC"
-# Subnet
+        - Key: Name
+          Value: SQL-Study-VPC
+  # Subnet
   SqlStudyPublicSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref SqlStudyVPC
       CidrBlock: !Ref SubnetCidrBlock
       MapPublicIpOnLaunch: true
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-PublicSubnet"
+        - Key: Name
+          Value: SQL-Study-PublicSubnet
 
-# InternetGateway
+  # InternetGateway
   SqlStudyInternetGateway:
-    Type: "AWS::EC2::InternetGateway"
+    Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-IGW"
+        - Key: Name
+          Value: SQL-Study-IGW
   AttachIGW:
-    Type: "AWS::EC2::VPCGatewayAttachment"
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref SqlStudyVPC
       InternetGatewayId: !Ref SqlStudyInternetGateway
- # Network/Public
+  # Network/Public
   SqlStudyPublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref SqlStudyVPC
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-PublicRouteTable"
+        - Key: Name
+          Value: SQL-Study-PublicRouteTable
   SqlStudyPublicRoute:
     Type: AWS::EC2::Route
     DependsOn: SqlStudyInternetGateway
@@ -66,27 +65,27 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref SqlStudyInternetGateway
   PublicSubnetRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref SqlStudyPublicSubnet
       RouteTableId: !Ref SqlStudyPublicRouteTable
   #EC2
   SqlStudyEC2Instance:
-    Type: 'AWS::EC2::Instance'
+    Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-02a405b3302affc24 # amazon linux 2023
       InstanceType: t2.micro
       SubnetId: !Ref SqlStudyPublicSubnet
       IamInstanceProfile: !Ref SqlStudyInstanceProfile
       SecurityGroupIds:
-      - !GetAtt SqlStudySecurityGroup.GroupId
-      UserData:
-        Fn::Base64: !Sub |
+        - !GetAtt SqlStudySecurityGroup.GroupId
+      UserData: !Base64
+        Fn::Sub: |
           #!/bin/bash
           sudo dnf install -y docker
           sudo systemctl enable --now docker
           sudo usermod -aG docker ec2-user
-          
+
           DOCKER_CONFIG=${!DOCKER_CONFIG:-/usr/local/lib/docker}
           sudo mkdir -p ${!DOCKER_CONFIG}/cli-plugins
           sudo curl -SL https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64 -o ${!DOCKER_CONFIG}/cli-plugins/docker-compose
@@ -102,15 +101,15 @@ Resources:
           docker compose up -d
 
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-EC2-Instance"
+        - Key: Name
+          Value: SQL-Study-EC2-Instance
   SqlStudyInstanceProfile:
-    Type: 'AWS::IAM::InstanceProfile'
+    Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
         - !Ref SqlStudyInstanceRole
   SqlStudyInstanceRole:
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -118,15 +117,15 @@ Resources:
           - Effect: Allow
             Principal:
               Service: ec2.amazonaws.com
-            Action: 'sts:AssumeRole'
+            Action: sts:AssumeRole
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore'
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-InstanceRole"
+        - Key: Name
+          Value: SQL-Study-InstanceRole
 
   SqlStudySecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+    Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref SqlStudyVPC
       GroupDescription: Enable access to port 3000
@@ -136,10 +135,10 @@ Resources:
           ToPort: 3000
           CidrIp: 0.0.0.0/0
       Tags:
-        - Key: "Name"
-          Value: "SQL-Study-SecurityGroup"
-          
+        - Key: Name
+          Value: SQL-Study-SecurityGroup
+
 Outputs:
   InstanceUrl:
     Description: The URL of the EC2 instance
-    Value: !Sub "http://${SqlStudyEC2Instance.PublicDnsName}:3000"
+    Value: !Sub http://${SqlStudyEC2Instance.PublicDnsName}:3000

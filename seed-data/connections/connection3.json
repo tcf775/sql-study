@@ -1,0 +1,9 @@
+{
+    "id": "seed-connection-3",
+    "name": "SQL勉強会第３回",
+    "driver": "postgres",
+    "host": "sql-study-postgres3",
+    "database": "postgres",
+    "username": "study_role",
+    "password": "password"
+  }
