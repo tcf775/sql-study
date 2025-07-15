@@ -5,41 +5,28 @@
     "content": "# SELECT文の基本\n\nSELECT文はデータベースからデータを取得するための**基本的なSQL文**です。\n\n## 基本構文\n\n```sql\nSELECT カラム名 FROM テーブル名;\n```\n\n## 主な使い方\n\n- **全てのカラムを取得**: `SELECT *`\n- **特定のカラムを取得**: `SELECT カラム1, カラム2`\n- **別名を付ける**: `SELECT カラム名 AS 別名`\n\n### 実例\n\n```sql\nSELECT product_name, price \nFROM products;\n```\n\n*商品名と価格を取得する例*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-001",
     "title": "商品一覧を表示しよう",
-    "description": "productsテーブルから全ての商品情報を取得してください。",
+    "description": "単語を正しい順序に並び替えて、productsテーブルから全ての商品情報を取得するSQLを完成させてください。",
     "difficulty": 1,
-    "expectedColumns": [
-      "product_id",
-      "product_name",
-      "category_id",
-      "price",
-      "stock_quantity",
-      "supplier",
-      "description",
-      "created_date"
-    ],
     "hints": [
-      "SELECT文を使用します",
+      "SELECT文から始めましょう",
       "全てのカラムを取得するには * を使用します",
       "FROM句でテーブル名を指定します"
     ],
     "solution": "SELECT * FROM products"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-002",
     "title": "商品名と価格を表示しよう",
-    "description": "productsテーブルから商品名(product_name)と価格(price)のみを取得してください。",
+    "description": "単語を正しい順序に並び替えて、productsテーブルから商品名と価格のみを取得するSQLを完成させてください。",
     "difficulty": 1,
-    "expectedColumns": [
-      "product_name",
-      "price"
-    ],
     "hints": [
+      "SELECT文から始めましょう",
       "特定のカラムのみを取得する場合は、カラム名をカンマで区切って指定します",
-      "SELECT product_name, price の形式で書きます"
+      "FROM句でテーブル名を指定します"
     ],
     "solution": "SELECT product_name, price FROM products"
   },
@@ -49,24 +36,20 @@
     "content": "# WHERE句による条件指定\n\nWHERE句を使用してデータを**絞り込む**ことができます。\n\n## 基本構文\n\n```sql\nSELECT カラム名 FROM テーブル名 WHERE 条件;\n```\n\n## 主な比較演算子\n\n- `=` 等しい\n- `<>` または `!=` 等しくない  \n- `>` より大きい\n- `<` より小さい\n- `>=` 以上\n- `<=` 以下\n\n### 実例\n\n```sql\nSELECT product_name, price \nFROM products \nWHERE price >= 10000;\n```\n\n*価格が10000円以上の商品を検索*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-003",
     "title": "高額商品を探そう",
-    "description": "価格が10000円以上の商品の商品名と価格を取得してください。",
+    "description": "単語を正しい順序に並び替えて、価格が10000円以上の商品の商品名と価格を取得するSQLを完成させてください。",
     "difficulty": 2,
-    "expectedColumns": [
-      "product_name",
-      "price"
-    ],
     "hints": [
+      "SELECT文から始めましょう",
       "WHERE句を使用して条件を指定します",
-      "価格の条件は price >= 10000 です",
-      "数値の比較では引用符は不要です"
+      "価格の条件は price >= 10000 です"
     ],
     "solution": "SELECT product_name, price FROM products WHERE price >= 10000"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-004",
     "title": "特定カテゴリの商品を探そう",
     "description": "category_idが1（ファッション）の商品の商品名を取得してください。",
@@ -86,7 +69,7 @@
     "content": "# ORDER BY句によるソート\n\nORDER BY句を使用してデータを**並び替える**ことができます。\n\n## 基本構文\n\n```sql\nSELECT カラム名 FROM テーブル名 ORDER BY カラム名 [ASC|DESC];\n```\n\n## ソート順序\n\n- **ASC**: 昇順（小さい順、デフォルト）\n- **DESC**: 降順（大きい順）\n- 複数カラムでのソートも可能\n\n### 実例\n\n```sql\nSELECT product_name, price \nFROM products \nORDER BY price DESC;\n```\n\n*価格の高い順に商品を並び替え*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-005",
     "title": "商品を価格順に並べよう",
     "description": "全ての商品を価格の安い順に並べて、商品名と価格を表示してください。",
@@ -103,7 +86,7 @@
     "solution": "SELECT product_name, price FROM products ORDER BY price"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-006",
     "title": "在庫の多い商品を探そう",
     "description": "商品を在庫数の多い順に並べて、商品名と在庫数を表示してください。",
@@ -124,7 +107,7 @@
     "content": "# LIMIT句による件数制限\n\nLIMIT句を使用して取得する**行数を制限**できます。\n\n## 基本構文\n\n```sql\nSELECT カラム名 FROM テーブル名 LIMIT 件数;\n```\n\n## ページング処理\n\nOFFSETと組み合わせてページング処理も可能:\n\n```sql\nSELECT カラム名 FROM テーブル名 \nLIMIT 件数 OFFSET 開始位置;\n```\n\n### 実例\n\n```sql\nSELECT product_name, price \nFROM products \nORDER BY price DESC \nLIMIT 5;\n```\n\n*上位5件の高額商品を取得*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-007",
     "title": "上位3つの高額商品を表示しよう",
     "description": "価格の高い順に上位3つの商品の商品名と価格を表示してください。",
@@ -146,7 +129,7 @@
     "content": "# 集約関数の基本\n\n集約関数を使用してデータを**集計**できます。\n\n## 主な集約関数\n\n- **COUNT()**: 行数をカウント\n- **SUM()**: 合計値を計算\n- **AVG()**: 平均値を計算\n- **MAX()**: 最大値を取得\n- **MIN()**: 最小値を取得\n\n### 基本的な使い方\n\n```sql\nSELECT COUNT(*) FROM products;\nSELECT AVG(price) FROM products;\n```\n\n*商品数と平均価格を取得する例*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-008",
     "title": "商品数を数えよう",
     "description": "productsテーブルに登録されている商品の総数を取得してください。",
@@ -161,7 +144,7 @@
     "solution": "SELECT COUNT(*) as count FROM products"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-009",
     "title": "平均価格を計算しよう",
     "description": "全商品の平均価格を計算してください。",
@@ -182,7 +165,7 @@
     "content": "# GROUP BY句によるグループ化\n\nGROUP BY句を使用してデータを**グループ化**し、グループごとに集計できます。\n\n## 基本構文\n\n```sql\nSELECT カラム名, 集約関数 \nFROM テーブル名 \nGROUP BY カラム名;\n```\n\n## 重要な注意点\n\n- SELECT句には**GROUP BYで指定したカラム**か**集約関数**のみ記述可能\n- **HAVING句**でグループ化後の条件指定が可能\n\n### 実例\n\n```sql\nSELECT category_id, COUNT(*) as product_count\nFROM products \nGROUP BY category_id;\n```\n\n*カテゴリ別の商品数を集計*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-010",
     "title": "カテゴリ別商品数を集計しよう",
     "description": "カテゴリ別に商品数を集計してください。category_idと商品数を表示してください。",
@@ -199,7 +182,7 @@
     "solution": "SELECT category_id, COUNT(*) as product_count FROM products GROUP BY category_id"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-011",
     "title": "カテゴリ別平均価格を計算しよう",
     "description": "カテゴリ別に商品の平均価格を計算してください。category_idと平均価格を表示してください。",
@@ -220,7 +203,7 @@
     "content": "# HAVING句による集計結果の絞り込み\n\nHAVING句を使用してGROUP BYで集計した結果を**絞り込む**ことができます。\n\n## 基本構文\n\n```sql\nSELECT カラム名, 集約関数 \nFROM テーブル名 \nGROUP BY カラム名 \nHAVING 集約関数の条件;\n```\n\n## WHERE句との違い\n\n- **WHERE**: グループ化**前**の行を絞り込み\n- **HAVING**: グループ化**後**の結果を絞り込み\n\n### 実例\n\n```sql\nSELECT category_id, COUNT(*) as product_count\nFROM products \nGROUP BY category_id \nHAVING COUNT(*) >= 2;\n```\n\n*商品数が2個以上のカテゴリのみ表示*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-012",
     "title": "商品数の多いカテゴリを探そう",
     "description": "商品数が2個以上のカテゴリのcategory_idと商品数を表示してください。",
@@ -242,7 +225,7 @@
     "content": "# JOIN（結合）の基本\n\nJOINを使用して複数のテーブルを**結合**できます。\n\n## 主なJOINの種類\n\n- **INNER JOIN**: 両方のテーブルに存在するデータのみ\n- **LEFT JOIN**: 左のテーブルの全データ + 右のテーブルの一致するデータ\n- **RIGHT JOIN**: 右のテーブルの全データ + 左のテーブルの一致するデータ\n\n## 基本構文\n\n```sql\nSELECT テーブル1.カラム, テーブル2.カラム\nFROM テーブル1\nINNER JOIN テーブル2 ON テーブル1.キー = テーブル2.キー;\n```\n\n### 実例\n\n```sql\nSELECT products.product_name, categories.category_name\nFROM products\nINNER JOIN categories ON products.category_id = categories.category_id;\n```\n\n*商品名とカテゴリ名を結合して取得*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-013",
     "title": "商品とカテゴリを結合しよう",
     "description": "商品名とカテゴリ名を表示してください。productsテーブルとcategoriesテーブルを結合してください。",
@@ -259,7 +242,7 @@
     "solution": "SELECT products.product_name, categories.category_name FROM products INNER JOIN categories ON products.category_id = categories.category_id"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-014",
     "title": "ファッション商品の詳細を表示しよう",
     "description": "カテゴリが「ファッション」の商品の商品名、価格、カテゴリ名を表示してください。",
@@ -282,7 +265,7 @@
     "content": "# 複数テーブルの結合\n\n**3つ以上のテーブル**を結合することも可能です。\n\n## 基本構文\n\n```sql\nSELECT テーブル1.カラム, テーブル2.カラム, テーブル3.カラム\nFROM テーブル1\nINNER JOIN テーブル2 ON テーブル1.キー = テーブル2.キー\nINNER JOIN テーブル3 ON テーブル2.キー = テーブル3.キー;\n```\n\n## 重要なポイント\n\n- **結合の順序**を考慮して、効率的なクエリを作成\n- **ON句**で適切な結合条件を指定\n- **テーブル名.カラム名**で明確に指定\n\n### 実例\n\n```sql\nSELECT orders.order_id, customers.customer_name, products.product_name\nFROM orders\nINNER JOIN customers ON orders.customer_id = customers.customer_id\nINNER JOIN order_details ON orders.order_id = order_details.order_id\nINNER JOIN products ON order_details.product_id = products.product_id;\n```\n\n*注文、顧客、商品情報を結合*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-015",
     "title": "注文詳細を表示しよう",
     "description": "注文ID、顧客名、商品名、数量を表示してください。orders、customers、order_details、productsテーブルを結合してください。",
@@ -307,7 +290,7 @@
     "content": "# サブクエリ（副問い合わせ）\n\nサブクエリを使用してクエリの中に**別のクエリを埋め込む**ことができます。\n\n## サブクエリの種類\n\n- **スカラーサブクエリ**: 1つの値を返す\n- **行サブクエリ**: 1行を返す\n- **テーブルサブクエリ**: 複数行を返す\n\n## 基本構文\n\n```sql\nSELECT * FROM テーブル名 \nWHERE カラム名 > (SELECT AVG(カラム名) FROM テーブル名);\n```\n\n### よく使われるパターン\n\n- **IN演算子**と組み合わせることが多い\n- **比較演算子**で条件指定\n- **EXISTS**で存在チェック\n\n### 実例\n\n```sql\nSELECT product_name, price \nFROM products \nWHERE price > (SELECT AVG(price) FROM products);\n```\n\n*平均価格より高い商品を検索*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-016",
     "title": "平均価格より高い商品を探そう",
     "description": "全商品の平均価格より高い商品の商品名と価格を表示してください。",
@@ -324,7 +307,7 @@
     "solution": "SELECT product_name, price FROM products WHERE price > (SELECT AVG(price) FROM products)"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-017",
     "title": "注文のある商品を探そう",
     "description": "注文されたことがある商品の商品名を表示してください（重複なし）。",
@@ -345,7 +328,7 @@
     "content": "# 日付・時間関数\n\n日付や時間を扱う関数を使用してデータを**分析**できます。\n\n## 主な日付関数\n\n- **DATE()**: 日付部分のみ抽出\n- **YEAR()**: 年を抽出\n- **MONTH()**: 月を抽出\n- **DAY()**: 日を抽出\n- **DATE_DIFF()**: 日付の差を計算\n\n### 基本的な使い方\n\n```sql\nSELECT * FROM orders \nWHERE YEAR(order_date) = 2023;\n```\n\n### 月別集計の例\n\n```sql\nSELECT MONTH(order_date) as month, COUNT(*) as order_count\nFROM orders \nWHERE YEAR(order_date) = 2023\nGROUP BY MONTH(order_date);\n```\n\n*2023年の月別注文数を集計*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-018",
     "title": "3月の注文を探そう",
     "description": "2023年3月に作成された注文の注文ID、顧客名、注文日を表示してください。",
@@ -368,7 +351,7 @@
     "content": "# CASE文による条件分岐\n\nCASE文を使用して条件に応じて**異なる値を返す**ことができます。\n\n## 基本構文\n\n```sql\nSELECT \n  CASE \n    WHEN 条件1 THEN 値1\n    WHEN 条件2 THEN 値2\n    ELSE 値3\n  END AS 別名\nFROM テーブル名;\n```\n\n## 活用場面\n\n- **データの分類**や変換に便利\n- **条件に応じた表示**の切り替え\n- **複雑な条件分岐**の実装\n\n### 実例\n\n```sql\nSELECT product_name,\n  CASE \n    WHEN price < 5000 THEN '安価'\n    WHEN price < 10000 THEN '普通'\n    ELSE '高価'\n  END AS price_category\nFROM products;\n```\n\n*価格帯による商品分類*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-019",
     "title": "価格帯で商品を分類しよう",
     "description": "商品を価格帯で分類してください。5000円未満は「安価」、5000円以上10000円未満は「普通」、10000円以上は「高価」として、商品名と価格帯を表示してください。",
@@ -391,7 +374,7 @@
     "content": "# ウィンドウ関数の基本\n\nウィンドウ関数を使用して**行ごとに集計値**を計算できます。\n\n## 基本構文\n\n```sql\nSELECT カラム名,\n       集約関数() OVER (PARTITION BY カラム名 ORDER BY カラム名)\nFROM テーブル名;\n```\n\n## 主なウィンドウ関数\n\n- **ROW_NUMBER()**: 行番号\n- **RANK()**: 順位（同順位あり、次の順位は飛ぶ）\n- **DENSE_RANK()**: 順位（同順位あり、次の順位は飛ばない）\n\n### 実例\n\n```sql\nSELECT product_name, price,\n       RANK() OVER (ORDER BY price DESC) AS price_rank\nFROM products;\n```\n\n*商品を価格順にランキング*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-020",
     "title": "価格順位を付けよう",
     "description": "商品に価格の高い順で順位を付けてください。商品名、価格、順位を表示してください。",
@@ -409,7 +392,7 @@
     "solution": "SELECT product_name, price, RANK() OVER (ORDER BY price DESC) AS price_rank FROM products"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-021",
     "title": "カテゴリ内での価格順位を付けよう",
     "description": "各カテゴリ内で価格の高い順に順位を付けてください。商品名、カテゴリ名、価格、カテゴリ内順位を表示してください。",
@@ -433,7 +416,7 @@
     "content": "# 複雑な集計とビジネス分析\n\n実際のビジネスでは複数のテーブルを結合し、**複雑な条件で集計**することが多いです。\n\n## 分析の例\n\n- **売上分析**（期間別、商品別、顧客別）\n- **在庫分析**\n- **顧客行動分析**\n- **トレンド分析**\n\n## 重要なポイント\n\n複数の技術を組み合わせて、**意味のある情報を抽出**しましょう。\n\n### 実例：顧客別売上分析\n\n```sql\nSELECT customers.customer_name, \n       SUM(order_details.quantity * order_details.unit_price) AS total_sales\nFROM customers\nINNER JOIN orders ON customers.customer_id = orders.customer_id\nINNER JOIN order_details ON orders.order_id = order_details.order_id\nGROUP BY customers.customer_id, customers.customer_name\nORDER BY total_sales DESC;\n```\n\n*顧客別の総購入金額を分析*"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-022",
     "title": "顧客別購入金額を集計しよう",
     "description": "顧客別の総購入金額を計算してください。顧客名と総購入金額を購入金額の多い順に表示してください。",
@@ -451,7 +434,7 @@
     "solution": "SELECT customers.customer_name, SUM(order_details.quantity * order_details.unit_price) AS total_amount FROM customers INNER JOIN orders ON customers.customer_id = orders.customer_id INNER JOIN order_details ON orders.order_id = order_details.order_id GROUP BY customers.customer_id, customers.customer_name ORDER BY total_amount DESC"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-023",
     "title": "月別売上を集計しよう",
     "description": "2023年の月別売上を集計してください。月と売上金額を表示してください。",
@@ -469,7 +452,7 @@
     "solution": "SELECT MONTH(orders.order_date) AS month, SUM(order_details.quantity * order_details.unit_price) AS monthly_sales FROM orders INNER JOIN order_details ON orders.order_id = order_details.order_id WHERE YEAR(orders.order_date) = 2023 GROUP BY MONTH(orders.order_date) ORDER BY month"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-024",
     "title": "人気商品ランキングを作ろう",
     "description": "販売数量の多い商品トップ5を表示してください。商品名、カテゴリ名、総販売数量を表示してください。",
@@ -488,7 +471,7 @@
     "solution": "SELECT products.product_name, categories.category_name, SUM(order_details.quantity) AS total_quantity FROM products INNER JOIN categories ON products.category_id = categories.category_id INNER JOIN order_details ON products.product_id = order_details.product_id GROUP BY products.product_id, products.product_name, categories.category_name ORDER BY total_quantity DESC LIMIT 5"
   },
   {
-    "type": "challenge",
+    "type": "word-reorder",
     "id": "challenge-025",
     "title": "リピート顧客を特定しよう",
     "description": "2回以上注文している顧客の顧客名と注文回数を表示してください。注文回数の多い順に並べてください。",

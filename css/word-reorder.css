@@ -1,0 +1,558 @@
+/* Word Reorder UI Styles */
+
+.word-reorder-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+}
+
+.instruction {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.instruction p {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* 回答エリア */
+.answer-area {
+    margin-bottom: 2rem;
+}
+
+.answer-area h4 {
+    margin: 0 0 0.8rem 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.answer-area h4::before {
+    content: '✓';
+    margin-right: 0.5rem;
+    color: #48bb78;
+    font-weight: bold;
+}
+
+.selected-words {
+    min-height: 80px;
+    padding: 1rem;
+    border: 2px dashed #cbd5e0;
+    border-radius: 12px;
+    background-color: #f7fafc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+}
+
+.selected-words:not(:empty) {
+    border-color: #48bb78;
+    background-color: #f0fff4;
+}
+
+/* 選択可能エリア */
+.available-area {
+    margin-bottom: 2rem;
+}
+
+.available-area h4 {
+    margin: 0 0 0.8rem 0;
+    color: #2d3748;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.available-area h4::before {
+    content: '📝';
+    margin-right: 0.5rem;
+}
+
+.available-words {
+    min-height: 120px;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #ffffff;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+/* 単語トークン */
+.word-token {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    position: relative;
+    
+    /* タップターゲットサイズを確保（最小44px） */
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* トークンタイプ別のスタイル */
+.word-token.keyword {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-color: #bbdefb;
+}
+
+.word-token.identifier {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border-color: #e1bee7;
+}
+
+.word-token.operator {
+    background-color: #fff3e0;
+    color: #f57c00;
+    border-color: #ffcc02;
+}
+
+.word-token.number {
+    background-color: #e8f5e8;
+    color: #388e3c;
+    border-color: #c8e6c9;
+}
+
+.word-token.string {
+    background-color: #fce4ec;
+    color: #c2185b;
+    border-color: #f8bbd9;
+}
+
+.word-token.punctuation {
+    background-color: #f5f5f5;
+    color: #616161;
+    border-color: #e0e0e0;
+}
+
+/* ホバー効果 */
+.word-token:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: currentColor;
+}
+
+/* タップ効果 */
+.word-token.tapped {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 選択された単語のスタイル */
+.word-token.selected {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.word-token.selected:hover {
+    transform: translateY(-1px);
+    opacity: 0.8;
+}
+
+/* 新しく追加された単語のアニメーション */
+.word-token.word-added {
+    animation: wordAdded 0.3s ease-out;
+}
+
+@keyframes wordAdded {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 空のメッセージ */
+.empty-message {
+    color: #a0aec0;
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+/* コントロールボタン */
+.controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.control-button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.reset-button {
+    background-color: #f56565;
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
+}
+
+.reset-button:hover {
+    background-color: #e53e3e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 101, 101, 0.4);
+}
+
+.check-button {
+    background-color: #48bb78;
+    color: white;
+    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+}
+
+.check-button:hover {
+    background-color: #38a169;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+}
+
+.control-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* リセットアニメーション */
+.word-reorder-container.reset-animation {
+    animation: resetPulse 0.3s ease-out;
+}
+
+@keyframes resetPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* レスポンシブデザイン */
+
+/* タブレット */
+@media (max-width: 768px) {
+    .word-reorder-container {
+        padding: 0.8rem;
+    }
+    
+    .instruction {
+        padding: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .instruction p {
+        font-size: 1rem;
+    }
+    
+    .word-token {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+        min-height: 40px;
+        min-width: 40px;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .control-button {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* スマートフォン */
+@media (max-width: 480px) {
+    .word-reorder-container {
+        padding: 0.5rem;
+    }
+    
+    .instruction {
+        padding: 0.6rem;
+        margin-bottom: 1rem;
+    }
+    
+    .instruction p {
+        font-size: 0.95rem;
+    }
+    
+    .answer-area h4,
+    .available-area h4 {
+        font-size: 1.1rem;
+    }
+    
+    .selected-words,
+    .available-words {
+        padding: 0.8rem;
+        gap: 0.4rem;
+    }
+    
+    .word-token {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+        min-height: 44px; /* タップターゲットサイズを維持 */
+        min-width: 44px;
+    }
+    
+    .control-button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+        min-height: 44px;
+    }
+}
+
+/* 非常に小さい画面 */
+@media (max-width: 320px) {
+    .word-token {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .selected-words,
+    .available-words {
+        padding: 0.6rem;
+        gap: 0.3rem;
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .word-reorder-container {
+        color: #e2e8f0;
+    }
+    
+    .answer-area h4,
+    .available-area h4 {
+        color: #e2e8f0;
+    }
+    
+    .selected-words {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .selected-words:not(:empty) {
+        border-color: #48bb78;
+        background-color: #1a202c;
+    }
+    
+    .available-words {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .empty-message {
+        color: #718096;
+    }
+}
+
+/* アクセシビリティ */
+@media (prefers-reduced-motion: reduce) {
+    .word-token,
+    .control-button,
+    .selected-words,
+    .word-reorder-container {
+        transition: none;
+    }
+    
+    .word-token.word-added {
+        animation: none;
+    }
+    
+    .word-reorder-container.reset-animation {
+        animation: none;
+    }
+}
+
+/* フォーカス表示（キーボードナビゲーション対応） */
+.word-token:focus,
+.control-button:focus {
+    outline: 2px solid #4299e1;
+    outline-offset: 2px;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+    .word-token {
+        border-width: 3px;
+    }
+    
+    .selected-words,
+    .available-words {
+        border-width: 3px;
+    }
+}
+/* 
+ゲームオーバーレイ（アニメーション用） */
+.game-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.game-overlay.hidden {
+    display: none;
+}
+
+.overlay-content {
+    text-align: center;
+    color: white;
+}
+
+.suspense-text {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+.result-animation {
+    text-align: center;
+}
+
+.result-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounceIn 0.6s ease-out;
+}
+
+.result-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.result-text.correct {
+    color: #48bb78;
+    text-shadow: 0 0 20px rgba(72, 187, 120, 0.5);
+}
+
+.result-text.incorrect {
+    color: #f56565;
+    text-shadow: 0 0 20px rgba(245, 101, 101, 0.5);
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 紙吹雪アニメーション */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #f39c12;
+    animation: confetti-fall linear infinite;
+}
+
+.confetti:nth-child(odd) {
+    background: #e74c3c;
+    width: 8px;
+    height: 8px;
+    animation-duration: 3s;
+}
+
+.confetti:nth-child(even) {
+    background: #3498db;
+    width: 6px;
+    height: 6px;
+    animation-duration: 2.5s;
+}
+
+.confetti:nth-child(3n) {
+    background: #2ecc71;
+    width: 12px;
+    height: 12px;
+    animation-duration: 3.5s;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
