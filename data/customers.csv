@@ -1,0 +1,11 @@
+customer_id,customer_name,email,phone,prefecture,city,age,gender,registration_date
+1,田中太郎,tanaka@example.com,090-1234-5678,東京都,渋谷区,28,男性,2023-01-15
+2,佐藤花子,sato@example.com,080-2345-6789,大阪府,大阪市,34,女性,2023-02-20
+3,鈴木一郎,suzuki@example.com,070-3456-7890,愛知県,名古屋市,45,男性,2023-01-10
+4,高橋美咲,takahashi@example.com,090-4567-8901,福岡県,福岡市,29,女性,2023-03-05
+5,伊藤健太,ito@example.com,080-5678-9012,北海道,札幌市,31,男性,2023-02-28
+6,山田由美,yamada@example.com,070-6789-0123,神奈川県,横浜市,26,女性,2023-01-25
+7,渡辺大輔,watanabe@example.com,090-7890-1234,京都府,京都市,38,男性,2023-03-10
+8,中村さくら,nakamura@example.com,080-8901-2345,兵庫県,神戸市,32,女性,2023-02-15
+9,小林正樹,kobayashi@example.com,070-9012-3456,千葉県,千葉市,27,男性,2023-01-30
+10,加藤麻衣,kato@example.com,090-0123-4567,埼玉県,さいたま市,35,女性,2023-03-01
