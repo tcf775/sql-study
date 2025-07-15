@@ -3,6 +3,8 @@ export class UIController {
         this.gameEngine = gameEngine;
         this.autoComplete = autoComplete;
         this.currentHintLevel = 0;
+        this.wordReorderUI = null;
+        this.sqlTokenizer = null;
         this.initializeElements();
         this.bindEvents();
         // ゲームオーバーレイを初期状態で非表示
@@ -44,7 +46,8 @@ export class UIController {
             resultIcon: document.getElementById('result-icon'),
             sidebar: document.querySelector('.sidebar'),
             toggleSidebar: document.getElementById('toggle-sidebar'),
-            schemaInfo: document.getElementById('schema-info')
+            schemaInfo: document.getElementById('schema-info'),
+            wordReorderSection: document.getElementById('word-reorder-section')
         };
     }
 
@@ -106,6 +109,9 @@ export class UIController {
         if (challenge.type === 'slide') {
             console.log('Showing slide challenge');
             this.showSlideChallenge(challenge);
+        } else if (challenge.type === 'word-reorder') {
+            console.log('Showing word-reorder challenge');
+            this.showWordReorderChallenge(challenge);
         } else {
             console.log('Showing SQL challenge');
             this.showSQLChallenge();
@@ -344,87 +350,187 @@ export class UIController {
     }
     
     async startGameAnimation() {
-        this.elements.gameOverlay.classList.remove('hidden');
-        this.elements.suspenseText.textContent = '判定中...';
-        this.elements.resultAnimation.classList.add('hidden');
+        // オーバーレイを表示
+        if (this.elements.gameOverlay) {
+            this.elements.gameOverlay.classList.remove('hidden');
+        }
+        
+        // 全てのエフェクトを非表示にしてリセット
+        this.hideAllEffects();
+        
+        // ロボットアニメーションを表示
+        const robotAnimation = document.getElementById('robot-animation');
+        if (robotAnimation) {
+            robotAnimation.style.display = 'flex';
+        }
     }
     
     async showSuspense() {
-        // 静かに待機（1.5秒）
-        this.elements.suspenseText.textContent = '判定中...';
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // ロボットが考えている間の待機時間（2秒）
+        await new Promise(resolve => setTimeout(resolve, 2000));
     }
     
     async showResult(isCorrect, message) {
-        this.elements.suspenseText.style.display = 'none';
-        this.elements.resultAnimation.classList.remove('hidden');
+        // ロボットアニメーションを非表示
+        const robotAnimation = document.getElementById('robot-animation');
+        if (robotAnimation) {
+            robotAnimation.style.display = 'none';
+        }
+        
+        // 結果アニメーションを表示
+        if (this.elements.resultAnimation) {
+            this.elements.resultAnimation.classList.remove('hidden');
+        }
         
         if (isCorrect) {
-            this.elements.resultText.textContent = '正解！';
-            this.elements.resultText.className = 'result-text correct';
-            this.elements.resultIcon.textContent = '🎉';
-            this.createConfetti();
+            // 正解の場合
+            if (this.elements.resultText) {
+                this.elements.resultText.textContent = '正解！素晴らしい！';
+                this.elements.resultText.className = 'result-text correct';
+            }
+            if (this.elements.resultIcon) {
+                this.elements.resultIcon.textContent = '🎉';
+            }
+            
+            // 成功エフェクトを表示
+            this.showSuccessEffects();
             this.playSuccessSound();
+            
         } else {
-            this.elements.resultText.textContent = '不正解...';
-            this.elements.resultText.className = 'result-text incorrect';
-            this.elements.resultIcon.textContent = '😢';
+            // 不正解の場合
+            if (this.elements.resultText) {
+                this.elements.resultText.textContent = '不正解...もう一度挑戦！';
+                this.elements.resultText.className = 'result-text incorrect';
+            }
+            if (this.elements.resultIcon) {
+                this.elements.resultIcon.textContent = '💭';
+            }
+            
+            // 失敗エフェクトを表示
+            this.showFailureEffects();
             this.playErrorSound();
         }
         
-        // 結果表示時間
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // 結果表示時間（3秒）
+        await new Promise(resolve => setTimeout(resolve, 3000));
     }
     
-    endGameAnimation() {
-        this.elements.gameOverlay.classList.add('hidden');
-        this.elements.suspenseText.style.display = 'block';
-        // 紙吹雪をクリア
+    showSuccessEffects() {
+        const successEffects = document.getElementById('success-effects');
+        if (successEffects) {
+            successEffects.classList.remove('hidden');
+        }
+        
+        // 追加の紙吹雪エフェクト
+        this.createEnhancedConfetti();
+        
+        // 3秒後にエフェクトを非表示
+        setTimeout(() => {
+            if (successEffects) {
+                successEffects.classList.add('hidden');
+            }
+        }, 3000);
+    }
+    
+    showFailureEffects() {
+        const failureEffects = document.getElementById('failure-effects');
+        if (failureEffects) {
+            failureEffects.classList.remove('hidden');
+        }
+        
+        // 2秒後にエフェクトを非表示
+        setTimeout(() => {
+            if (failureEffects) {
+                failureEffects.classList.add('hidden');
+            }
+        }, 2000);
+    }
+    
+    hideAllEffects() {
+        // 全てのエフェクトを非表示
+        const effects = [
+            'robot-animation',
+            'result-animation', 
+            'success-effects',
+            'failure-effects'
+        ];
+        
+        effects.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (id === 'robot-animation') {
+                    element.style.display = 'none';
+                } else {
+                    element.classList.add('hidden');
+                }
+            }
+        });
+        
+        // 既存の紙吹雪をクリア
         const confetti = document.querySelectorAll('.confetti');
         confetti.forEach(c => c.remove());
     }
     
+    endGameAnimation() {
+        if (this.elements.gameOverlay) {
+            this.elements.gameOverlay.classList.add('hidden');
+        }
+        
+        // 全てのエフェクトをクリア
+        this.hideAllEffects();
+    }
+    
     playSuccessSound() {
-        // Web Audio APIで成功音を生成
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
+        try {
+            // Web Audio APIで成功音を生成
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        } catch (error) {
+            console.warn('音声再生エラー:', error);
+        }
     }
     
     playErrorSound() {
-        // Web Audio APIでエラー音を生成
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.2);
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.4);
+        try {
+            // Web Audio APIでエラー音を生成
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.4);
+        } catch (error) {
+            console.warn('音声再生エラー:', error);
+        }
     }
     
     createConfetti() {
         // クラッカー風紙吹雪を作成
+        if (!this.elements.gameOverlay) return;
+        
         for (let i = 0; i < 50; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
@@ -432,6 +538,40 @@ export class UIController {
             confetti.style.animationDelay = Math.random() * 3 + 's';
             confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
             this.elements.gameOverlay.appendChild(confetti);
+        }
+    }
+    
+    createEnhancedConfetti() {
+        // より豪華な紙吹雪エフェクト
+        if (!this.elements.gameOverlay) return;
+        
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+        const shapes = ['●', '■', '▲', '★', '♦', '♠', '♥'];
+        
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti enhanced-confetti';
+            confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+            confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            confetti.style.animationDelay = Math.random() * 2 + 's';
+            confetti.style.animationDuration = (Math.random() * 4 + 3) + 's';
+            confetti.style.position = 'absolute';
+            confetti.style.zIndex = '10000';
+            
+            // ランダムな回転を追加
+            const rotation = Math.random() * 360;
+            confetti.style.transform = `rotate(${rotation}deg)`;
+            
+            this.elements.gameOverlay.appendChild(confetti);
+            
+            // 一定時間後に削除
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 7000);
         }
     }
     
@@ -558,9 +698,12 @@ export class UIController {
     }
     
     showSlideChallenge(challenge) {
-        // SQLエディターを非表示
+        // SQLエディターと単語並び替えを非表示
         this.elements.sqlEditorSection.classList.add('hidden');
         this.elements.resultsSection.classList.add('hidden');
+        if (this.elements.wordReorderSection) {
+            this.elements.wordReorderSection.classList.add('hidden');
+        }
         
         // スライドを表示
         this.elements.slideSection.classList.remove('hidden');
@@ -732,11 +875,142 @@ export class UIController {
     }
     
     showSQLChallenge() {
-        // スライドを非表示
+        // スライドと単語並び替えを非表示
         this.elements.slideSection.classList.add('hidden');
+        if (this.elements.wordReorderSection) {
+            this.elements.wordReorderSection.classList.add('hidden');
+        }
         
         // SQLエディターを表示
         this.elements.sqlEditorSection.classList.remove('hidden');
         this.elements.resultsSection.classList.remove('hidden');
+    }
+
+    /**
+     * 単語並び替えチャレンジを表示
+     * @param {Object} challenge - チャレンジオブジェクト
+     */
+    async showWordReorderChallenge(challenge) {
+        // 他のセクションを非表示
+        this.elements.sqlEditorSection.classList.add('hidden');
+        this.elements.resultsSection.classList.add('hidden');
+        this.elements.slideSection.classList.add('hidden');
+        
+        // 単語並び替えセクションを表示
+        if (this.elements.wordReorderSection) {
+            this.elements.wordReorderSection.classList.remove('hidden');
+            
+            // SQLTokenizerとWordReorderUIを初期化
+            if (!this.sqlTokenizer) {
+                const { SQLTokenizer } = await import('./sql-tokenizer.js');
+                this.sqlTokenizer = new SQLTokenizer();
+            }
+            
+            if (!this.wordReorderUI) {
+                const { WordReorderUI } = await import('./word-reorder-ui.js');
+                this.wordReorderUI = new WordReorderUI(this.elements.wordReorderSection);
+                
+                // 回答確認のコールバックを設定
+                this.wordReorderUI.setCheckAnswerCallback((sql) => {
+                    this.executeWordReorderQuery(sql);
+                });
+            }
+            
+            // 正解SQLをトークン化してシャッフル
+            const tokens = this.sqlTokenizer.tokenize(challenge.solution);
+            const shuffledTokens = this.sqlTokenizer.shuffle(tokens);
+            
+            // 単語を表示
+            this.wordReorderUI.displayWords(shuffledTokens);
+            
+            console.log('Word reorder challenge initialized:', {
+                solution: challenge.solution,
+                tokens: tokens.length,
+                shuffled: shuffledTokens.length
+            });
+        } else {
+            console.error('Word reorder section not found in HTML');
+            this.showError('単語並び替え機能の初期化に失敗しました');
+        }
+    }
+
+    /**
+     * 単語並び替えで構築されたSQLを実行・検証
+     * @param {string} userSQL - ユーザーが構築したSQL
+     */
+    async executeWordReorderQuery(userSQL) {
+        if (!userSQL || userSQL.trim() === '') {
+            this.showError('単語を並び替えてSQLを構築してください');
+            return;
+        }
+
+        // UIを無効化
+        if (this.wordReorderUI) {
+            this.wordReorderUI.setDisabled(true);
+        }
+
+        this.elements.executionStatus.textContent = '実行中...';
+        this.elements.executionStatus.className = 'status-indicator';
+
+        try {
+            // ゲームアニメーション開始（ロボット表示）
+            await this.startGameAnimation();
+            
+            // GameEngineの word-reorder 専用メソッドを使用（バックグラウンドで実行）
+            const result = await this.gameEngine.checkWordReorderAnswer(userSQL);
+            
+            // ロボットの思考時間を表示
+            await this.showSuspense();
+
+            // 結果アニメーション表示
+            await this.showResult(result.correct, result.message);
+            
+            // アニメーション終了後に実際の処理結果を反映
+            if (result.correct) {
+                this.updateScore();
+                
+                // 結果を表示
+                if (result.userResult && result.userResult.success) {
+                    this.displayResults(result.userResult);
+                }
+                
+                // ステータス更新
+                this.elements.executionStatus.textContent = result.message;
+                this.elements.executionStatus.className = 'status-indicator status-success';
+                
+                // 次の問題へのボタンを有効化
+                if (this.gameEngine.currentChallengeIndex < this.gameEngine.challenges.length - 1) {
+                    this.elements.nextButton.disabled = false;
+                }
+            } else {
+                // エラーでない場合は結果を表示
+                if (result.userResult && result.userResult.success) {
+                    this.displayResults(result.userResult);
+                }
+                
+                // ステータス更新
+                this.elements.executionStatus.textContent = result.message;
+                this.elements.executionStatus.className = 'status-indicator status-error';
+            }
+
+        } catch (error) {
+            console.error('Word reorder query execution error:', error);
+            
+            // エラーの場合もロボットの思考時間を表示
+            await this.showSuspense();
+            await this.showResult(false, `実行エラー: ${error.message}`);
+            
+            // ステータス更新
+            this.elements.executionStatus.textContent = `実行エラー: ${error.message}`;
+            this.elements.executionStatus.className = 'status-indicator status-error';
+        } finally {
+            // UIを再有効化
+            if (this.wordReorderUI) {
+                this.wordReorderUI.setDisabled(false);
+            }
+            
+            // ゲームアニメーション終了
+            this.endGameAnimation();
+        }
     }
 }

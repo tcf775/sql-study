@@ -553,3 +553,525 @@ th {
     height: 100%;
     border: none;
 }
+/* ===
+== ゲームアニメーション ===== */
+
+/* ゲームオーバーレイ */
+.game-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+}
+
+.game-overlay.hidden {
+    display: none;
+}
+
+.overlay-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ロボットアニメーション */
+.robot-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.robot-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: robotFloat 2s ease-in-out infinite;
+}
+
+@keyframes robotFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.robot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.robot-head {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    border-radius: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    animation: robotThink 3s ease-in-out infinite;
+}
+
+@keyframes robotThink {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+
+.robot-eye {
+    width: 12px;
+    height: 12px;
+    background: #667eea;
+    border-radius: 50%;
+    position: absolute;
+    top: 25px;
+    animation: robotBlink 2s ease-in-out infinite;
+}
+
+.left-eye {
+    left: 20px;
+}
+
+.right-eye {
+    right: 20px;
+}
+
+@keyframes robotBlink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+}
+
+.robot-mouth {
+    width: 20px;
+    height: 10px;
+    background: #4a5568;
+    border-radius: 0 0 20px 20px;
+    position: absolute;
+    bottom: 20px;
+    animation: robotSpeak 1.5s ease-in-out infinite;
+}
+
+@keyframes robotSpeak {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.5); }
+}
+
+.robot-body {
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(145deg, #f0f0f0, #ffffff);
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.robot-chest {
+    width: 30px;
+    height: 30px;
+    background: #667eea;
+    border-radius: 50%;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: robotHeartbeat 1s ease-in-out infinite;
+}
+
+@keyframes robotHeartbeat {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+}
+
+.robot-arm {
+    width: 15px;
+    height: 50px;
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    border-radius: 10px;
+    position: absolute;
+    top: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.left-arm {
+    left: -20px;
+    animation: robotArmLeft 2s ease-in-out infinite;
+}
+
+.right-arm {
+    right: -20px;
+    animation: robotArmRight 2s ease-in-out infinite;
+}
+
+@keyframes robotArmLeft {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-15deg); }
+}
+
+@keyframes robotArmRight {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+}
+
+.robot-legs {
+    display: flex;
+    gap: 10px;
+}
+
+.robot-leg {
+    width: 20px;
+    height: 40px;
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: robotWalk 1s ease-in-out infinite alternate;
+}
+
+.left-leg {
+    animation-delay: 0s;
+}
+
+.right-leg {
+    animation-delay: 0.5s;
+}
+
+@keyframes robotWalk {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(5px); }
+}
+
+/* 思考バブル */
+.thinking-bubbles {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+}
+
+.bubble {
+    background: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #4a5568;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: bubbleFloat 2s ease-in-out infinite;
+}
+
+.bubble-1 {
+    animation-delay: 0s;
+}
+
+.bubble-2 {
+    animation-delay: 0.5s;
+}
+
+.bubble-3 {
+    animation-delay: 1s;
+}
+
+@keyframes bubbleFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+        opacity: 0.7;
+    }
+    50% { 
+        transform: translateY(-15px) scale(1.1);
+        opacity: 1;
+    }
+}
+
+.robot-text {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* 結果アニメーション */
+.result-animation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    animation: resultAppear 0.8s ease-out;
+}
+
+@keyframes resultAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0px);
+    }
+}
+
+.result-icon {
+    font-size: 5rem;
+    animation: iconBounce 1s ease-out;
+}
+
+@keyframes iconBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.result-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: textSlideUp 0.8s ease-out 0.3s both;
+}
+
+@keyframes textSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+/* 成功エフェクト */
+.success-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.cracker {
+    position: absolute;
+    bottom: 10%;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    border-radius: 50%;
+    animation: crackerExplode 0.8s ease-out;
+}
+
+.left-cracker {
+    left: 10%;
+    animation-delay: 0.2s;
+}
+
+.right-cracker {
+    right: 10%;
+    animation-delay: 0.4s;
+}
+
+@keyframes crackerExplode {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0.5) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.rocket-container {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 100%;
+}
+
+.rocket {
+    position: absolute;
+    font-size: 3rem;
+    animation: rocketLaunch 2s ease-out;
+}
+
+.rocket-1 {
+    left: 20%;
+    animation-delay: 0.3s;
+}
+
+.rocket-2 {
+    left: 50%;
+    animation-delay: 0.6s;
+}
+
+.rocket-3 {
+    left: 80%;
+    animation-delay: 0.9s;
+}
+
+@keyframes rocketLaunch {
+    0% {
+        bottom: 0%;
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: rotate(180deg) scale(1.2);
+    }
+    100% {
+        bottom: 100%;
+        opacity: 0;
+        transform: rotate(360deg) scale(0.5);
+    }
+}
+
+/* 失敗エフェクト */
+.failure-effects {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.shake-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    animation: shakeEffect 0.6s ease-in-out;
+}
+
+@keyframes shakeEffect {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.error-icon {
+    font-size: 5rem;
+    animation: errorPulse 1s ease-in-out infinite;
+}
+
+@keyframes errorPulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% { 
+        transform: scale(1.1);
+        filter: brightness(1.2);
+    }
+}
+
+.error-waves {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 3px solid #ff6b6b;
+    border-radius: 50%;
+    animation: waveExpand 1.5s ease-out infinite;
+}
+
+.wave-1 {
+    animation-delay: 0s;
+}
+
+.wave-2 {
+    animation-delay: 0.3s;
+}
+
+.wave-3 {
+    animation-delay: 0.6s;
+}
+
+@keyframes waveExpand {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+    }
+}
+
+/* 紙吹雪エフェクト（既存の改良版） */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+    animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+    0% {
+        top: -10px;
+        transform: rotateZ(0deg);
+    }
+    100% {
+        top: 100vh;
+        transform: rotateZ(720deg);
+    }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .robot-container {
+        transform: scale(0.8);
+    }
+    
+    .result-icon {
+        font-size: 3rem;
+    }
+    
+    .result-text {
+        font-size: 1.8rem;
+    }
+    
+    .robot-text {
+        font-size: 1rem;
+    }
+    
+    .thinking-bubbles {
+        transform: translateX(-50%) scale(0.8);
+    }
+}

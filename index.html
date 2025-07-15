@@ -6,6 +6,7 @@
     <title>SQL学習ゲーム</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/word-reorder.css">
 </head>
 <body>
     <div id="app">
@@ -66,6 +67,11 @@
                         <iframe id="slide-iframe" src="" frameborder="0"></iframe>
                     </div>
                 </div>
+
+                <!-- 単語並び替えセクション -->
+                <div id="word-reorder-section" class="word-reorder-section hidden">
+                    <!-- WordReorderUIクラスがここにコンテンツを動的に生成します -->
+                </div>
             </section>
 
             <section class="results-section">
@@ -102,6 +108,68 @@
         <div class="loading-content">
             <div class="spinner"></div>
             <p>DuckDBを初期化中...</p>
+        </div>
+    </div>
+
+    <!-- ゲームオーバーレイ（アニメーション用） -->
+    <div id="game-overlay" class="game-overlay hidden">
+        <div class="overlay-content">
+            <!-- ロボット判定アニメーション -->
+            <div id="robot-animation" class="robot-animation">
+                <div class="robot-container">
+                    <div class="robot">
+                        <div class="robot-head">
+                            <div class="robot-eye left-eye"></div>
+                            <div class="robot-eye right-eye"></div>
+                            <div class="robot-mouth"></div>
+                        </div>
+                        <div class="robot-body">
+                            <div class="robot-chest"></div>
+                            <div class="robot-arm left-arm"></div>
+                            <div class="robot-arm right-arm"></div>
+                        </div>
+                        <div class="robot-legs">
+                            <div class="robot-leg left-leg"></div>
+                            <div class="robot-leg right-leg"></div>
+                        </div>
+                    </div>
+                    <div class="thinking-bubbles">
+                        <div class="bubble bubble-1">?</div>
+                        <div class="bubble bubble-2">SQL</div>
+                        <div class="bubble bubble-3">🤔</div>
+                    </div>
+                </div>
+                <div class="robot-text">AIが回答を分析中...</div>
+            </div>
+            
+            <!-- 結果アニメーション -->
+            <div id="result-animation" class="result-animation hidden">
+                <div id="result-icon" class="result-icon">🎉</div>
+                <div id="result-text" class="result-text">正解！</div>
+            </div>
+            
+            <!-- 成功時のクラッカーエフェクト -->
+            <div id="success-effects" class="success-effects hidden">
+                <div class="cracker left-cracker"></div>
+                <div class="cracker right-cracker"></div>
+                <div class="rocket-container">
+                    <div class="rocket rocket-1">🚀</div>
+                    <div class="rocket rocket-2">🎆</div>
+                    <div class="rocket rocket-3">✨</div>
+                </div>
+            </div>
+            
+            <!-- 失敗時のエフェクト -->
+            <div id="failure-effects" class="failure-effects hidden">
+                <div class="shake-container">
+                    <div class="error-icon">❌</div>
+                    <div class="error-waves">
+                        <div class="wave wave-1"></div>
+                        <div class="wave wave-2"></div>
+                        <div class="wave wave-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
