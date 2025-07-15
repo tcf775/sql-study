@@ -5,7 +5,7 @@
     "content": "# SELECT文の基本\n\nSELECT文はデータベースからデータを取得するための**基本的なSQL文**です。\n\n## 基本構文\n\n```sql\nSELECT カラム名 FROM テーブル名;\n```\n\n## 主な使い方\n\n- **全てのカラムを取得**: `SELECT *`\n- **特定のカラムを取得**: `SELECT カラム1, カラム2`\n- **別名を付ける**: `SELECT カラム名 AS 別名`\n\n### 実例\n\n```sql\nSELECT product_name, price \nFROM products;\n```\n\n*商品名と価格を取得する例*"
   },
   {
-    "type": "word-reorder",
+    "type": "challenge",
     "id": "challenge-001",
     "title": "商品一覧を表示しよう",
     "description": "単語を正しい順序に並び替えて、productsテーブルから全ての商品情報を取得するSQLを完成させてください。",

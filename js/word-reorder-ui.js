@@ -38,7 +38,7 @@ export class WordReorderUI {
         this.container.innerHTML = `
             <div class="word-reorder-container">
                 <div class="instruction">
-                    <p>単語をタップして正しい順序に並び替えてください</p>
+                    <p>単語をタップまたはドラッグして正しい順序に並び替えてください</p>
                 </div>
                 
                 <div class="answer-area">
@@ -62,6 +62,9 @@ export class WordReorderUI {
                         ✓ 回答確認
                     </button>
                 </div>
+                
+                <!-- アクセシビリティ用のライブリージョン -->
+                <div id="drag-announcements" aria-live="polite" aria-atomic="true" class="sr-only"></div>
             </div>
         `;
         
@@ -87,15 +90,37 @@ export class WordReorderUI {
      * ドラッグ&ドロップ機能を初期化
      */
     initializeDragAndDrop() {
-        // ドロップゾーンの設定
-        this.setupDropZones();
+        // ブラウザ互換性チェック
+        this.dragDropSupported = this.checkDragDropSupport();
         
-        // ドラッグプレビュー要素を作成
-        this.createDragPreview();
-        
-        // グローバルドラッグイベントの設定
-        document.addEventListener('dragover', (e) => e.preventDefault());
-        document.addEventListener('drop', (e) => e.preventDefault());
+        if (this.dragDropSupported) {
+            // ドロップゾーンの設定
+            this.setupDropZones();
+            
+            // ドラッグプレビュー要素を作成
+            this.createDragPreview();
+            
+            // グローバルドラッグイベントの設定
+            document.addEventListener('dragover', (e) => e.preventDefault());
+            document.addEventListener('drop', (e) => e.preventDefault());
+        } else {
+            console.info('ドラッグ&ドロップがサポートされていません。タップ操作のみ利用可能です。');
+        }
+    }
+    
+    /**
+     * ドラッグ&ドロップサポートをチェック
+     * @returns {boolean} サポートされているかどうか
+     */
+    checkDragDropSupport() {
+        try {
+            // HTML5 Drag and Drop API のサポートチェック
+            const div = document.createElement('div');
+            return ('draggable' in div) && ('ondragstart' in div) && ('ondrop' in div);
+        } catch (error) {
+            console.warn('ドラッグ&ドロップサポートチェックでエラー:', error);
+            return false;
+        }
     }
     
     /**
@@ -217,6 +242,13 @@ export class WordReorderUI {
         wordElement.dataset.index = index;
         wordElement.dataset.tokenType = token.type;
         
+        // アクセシビリティ属性を設定
+        wordElement.setAttribute('role', 'button');
+        wordElement.setAttribute('tabindex', '0');
+        wordElement.setAttribute('aria-label', 
+            `${token.text} - ${type === 'available' ? '選択可能な単語' : '選択済みの単語'}`);
+        wordElement.setAttribute('aria-grabbed', 'false');
+        
         // ドラッグ&ドロップ機能を追加
         this.makeDraggable(wordElement, token, type, index);
         
@@ -226,11 +258,16 @@ export class WordReorderUI {
             this.onWordTap(type, index);
         });
         
-        // タッチイベントの設定（モバイル対応）
-        wordElement.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.onWordTap(type, index);
+        // キーボードナビゲーション対応
+        wordElement.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.onWordTap(type, index);
+            }
         });
+        
+        // タッチイベントの設定（モバイル対応）
+        // touchendイベントはmakeDraggableメソッド内で処理されるため、ここでは設定しない
         
         return wordElement;
     }
@@ -243,15 +280,25 @@ export class WordReorderUI {
      * @param {number} index - 配列内のインデックス
      */
     makeDraggable(element, token, type, index) {
-        // HTML5 Drag and Drop
-        element.draggable = true;
-        element.addEventListener('dragstart', (e) => this.onDragStart(e, token, type, index));
-        element.addEventListener('dragend', (e) => this.onDragEnd(e));
+        if (!this.dragDropSupported) {
+            // ドラッグ&ドロップがサポートされていない場合はスキップ
+            return;
+        }
         
-        // Touch Events for mobile
-        element.addEventListener('touchstart', (e) => this.onTouchStart(e, token, type, index));
-        element.addEventListener('touchmove', (e) => this.onTouchMove(e));
-        element.addEventListener('touchend', (e) => this.onTouchEnd(e));
+        try {
+            // HTML5 Drag and Drop
+            element.draggable = true;
+            element.addEventListener('dragstart', (e) => this.onDragStart(e, token, type, index));
+            element.addEventListener('dragend', (e) => this.onDragEnd(e));
+            
+            // Touch Events for mobile
+            element.addEventListener('touchstart', (e) => this.onTouchStart(e, token, type, index));
+            element.addEventListener('touchmove', (e) => this.onTouchMove(e));
+            element.addEventListener('touchend', (e) => this.onTouchEnd(e));
+        } catch (error) {
+            console.warn('ドラッグ機能の設定でエラーが発生しました:', error);
+            // エラーが発生してもタップ機能は維持される
+        }
     }
     
     /**
@@ -342,10 +389,33 @@ export class WordReorderUI {
         this.dragState.draggedFromIndex = index;
         this.dragState.draggedElement = event.target;
         
-        // ドラッグデータを設定
-        event.dataTransfer.setData('text/plain', JSON.stringify({
-            token, type, index
-        }));
+        // ドラッグデータを設定（複数の形式で設定）
+        const dragData = {
+            token, 
+            type, 
+            index,
+            timestamp: Date.now(),
+            sourceId: `word-reorder-${type}-${index}`
+        };
+        
+        event.dataTransfer.setData('text/plain', JSON.stringify(dragData));
+        event.dataTransfer.setData('application/json', JSON.stringify(dragData));
+        
+        // ドラッグ効果を設定
+        event.dataTransfer.effectAllowed = 'move';
+        
+        // カスタムドラッグイメージを設定（オプション）
+        try {
+            const dragImage = event.target.cloneNode(true);
+            dragImage.style.opacity = '0.8';
+            event.dataTransfer.setDragImage(dragImage, 
+                event.target.offsetWidth / 2, 
+                event.target.offsetHeight / 2
+            );
+        } catch (e) {
+            // ドラッグイメージ設定に失敗した場合は無視
+            console.debug('カスタムドラッグイメージの設定に失敗:', e);
+        }
         
         // 視覚的フィードバック
         event.target.classList.add('dragging');
@@ -635,12 +705,44 @@ export class WordReorderUI {
      * @returns {number} 挿入位置
      */
     calculateInsertPosition(event, targetType) {
-        // 簡単な実装：末尾に挿入
-        if (targetType === 'selected') {
-            return this.selectedWords.length;
-        } else {
-            return this.availableWords.length;
+        const container = targetType === 'selected' ? 
+            this.selectedWordsContainer : this.availableWordsContainer;
+        const words = targetType === 'selected' ? 
+            this.selectedWords : this.availableWords;
+        
+        // コンテナ内の単語要素を取得
+        const wordElements = Array.from(container.querySelectorAll('.word-token'));
+        
+        if (wordElements.length === 0) {
+            return 0; // 空の場合は最初の位置
         }
+        
+        // マウス/タッチ位置を取得
+        const clientX = event.clientX || (event.touches && event.touches[0]?.clientX) || 0;
+        const clientY = event.clientY || (event.touches && event.touches[0]?.clientY) || 0;
+        
+        // 各単語要素との距離を計算
+        let closestIndex = words.length; // デフォルトは末尾
+        let minDistance = Infinity;
+        
+        wordElements.forEach((element, index) => {
+            const rect = element.getBoundingClientRect();
+            const elementCenterX = rect.left + rect.width / 2;
+            const elementCenterY = rect.top + rect.height / 2;
+            
+            // 距離を計算（主にX軸を重視）
+            const deltaX = clientX - elementCenterX;
+            const deltaY = clientY - elementCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY * 0.5); // Y軸の重みを軽減
+            
+            if (distance < minDistance) {
+                minDistance = distance;
+                // 要素の左半分なら前に、右半分なら後に挿入
+                closestIndex = deltaX < 0 ? index : index + 1;
+            }
+        });
+        
+        return Math.max(0, Math.min(closestIndex, words.length));
     }
     
     /**
@@ -649,14 +751,47 @@ export class WordReorderUI {
      * @param {string} type - エリアタイプ
      */
     showInsertionIndicator(position, type) {
-        // 後で実装予定
+        // 既存のインジケーターを削除
+        this.hideInsertionIndicator();
+        
+        const container = type === 'selected' ? 
+            this.selectedWordsContainer : this.availableWordsContainer;
+        const words = type === 'selected' ? 
+            this.selectedWords : this.availableWords;
+        
+        if (words.length === 0) {
+            // 空のコンテナの場合は全体をハイライト
+            container.classList.add('insertion-highlight');
+            return;
+        }
+        
+        // 挿入位置インジケーターを作成
+        const indicator = document.createElement('div');
+        indicator.className = 'insertion-indicator';
+        indicator.dataset.insertionIndicator = 'true';
+        
+        const wordElements = Array.from(container.querySelectorAll('.word-token'));
+        
+        if (position >= wordElements.length) {
+            // 末尾に挿入
+            container.appendChild(indicator);
+        } else {
+            // 指定位置に挿入
+            container.insertBefore(indicator, wordElements[position]);
+        }
     }
     
     /**
      * 挿入位置インジケーターを非表示
      */
     hideInsertionIndicator() {
-        // 後で実装予定
+        // インジケーター要素を削除
+        const indicators = document.querySelectorAll('[data-insertion-indicator="true"]');
+        indicators.forEach(indicator => indicator.remove());
+        
+        // ハイライトクラスを削除
+        this.selectedWordsContainer.classList.remove('insertion-highlight');
+        this.availableWordsContainer.classList.remove('insertion-highlight');
     }
     
     /**
@@ -668,8 +803,22 @@ export class WordReorderUI {
     performDrop(dragData, targetType, insertPosition) {
         const { token, type: sourceType, index: sourceIndex } = dragData;
         
-        // 同じ場所へのドロップは無視
+        // 同じエリア内での並び替えの場合
         if (sourceType === targetType) {
+            if (targetType === 'selected') {
+                // 回答エリア内での並び替え
+                const movedToken = this.selectedWords.splice(sourceIndex, 1)[0];
+                
+                // 挿入位置を調整（削除により位置がずれる場合）
+                let adjustedPosition = insertPosition;
+                if (sourceIndex < insertPosition) {
+                    adjustedPosition--;
+                }
+                
+                this.selectedWords.splice(adjustedPosition, 0, movedToken);
+                this.renderSelectedWords();
+            }
+            // 選択可能エリア内での並び替えは通常不要だが、将来の拡張のために残す
             return;
         }
         
@@ -680,16 +829,36 @@ export class WordReorderUI {
             this.selectedWords.splice(sourceIndex, 1);
         }
         
-        // ターゲットに追加
+        // ターゲットに挿入位置を考慮して追加
         if (targetType === 'available') {
+            // 選択可能エリアは通常末尾に追加
             this.availableWords.push(token);
         } else {
-            this.selectedWords.push(token);
+            // 回答エリアは指定位置に挿入
+            const safePosition = Math.max(0, Math.min(insertPosition, this.selectedWords.length));
+            this.selectedWords.splice(safePosition, 0, token);
         }
         
         // UIを更新
         this.renderAvailableWords();
         this.renderSelectedWords();
+        
+        // ドロップ成功のアニメーション効果
+        setTimeout(() => {
+            const targetContainer = targetType === 'selected' ? 
+                this.selectedWordsContainer : this.availableWordsContainer;
+            const wordElements = targetContainer.querySelectorAll('.word-token');
+            const targetElement = Array.from(wordElements).find(el => 
+                el.textContent === token.text
+            );
+            
+            if (targetElement) {
+                targetElement.classList.add('drop-success');
+                setTimeout(() => {
+                    targetElement.classList.remove('drop-success');
+                }, 300);
+            }
+        }, 10);
     }
     
     /**
@@ -702,6 +871,15 @@ export class WordReorderUI {
     startTouchDrag(element, token, type, index) {
         this.dragState.isDragging = true;
         this.dragState.draggedElement = element;
+        
+        // 触覚フィードバック（サポートされている場合）
+        try {
+            if (navigator.vibrate) {
+                navigator.vibrate(50); // 50ms の短い振動
+            }
+        } catch (error) {
+            // 振動APIがサポートされていない場合は無視
+        }
         
         // 視覚的フィードバック
         element.classList.add('dragging');

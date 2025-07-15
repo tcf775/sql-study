@@ -432,6 +432,248 @@
         border-width: 3px;
     }
 }
+
+/* ===== ドラッグ&ドロップ スタイル ===== */
+
+/* ドラッグ中の単語スタイル */
+.word-token.dragging {
+    opacity: 0.7;
+    transform: rotate(5deg) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    pointer-events: none;
+    transition: none; /* ドラッグ中はトランジションを無効化 */
+}
+
+/* ドロップゾーンのハイライト */
+.drop-zone-highlight {
+    border-color: #4299e1 !important;
+    background-color: rgba(66, 153, 225, 0.05);
+    box-shadow: inset 0 0 0 2px rgba(66, 153, 225, 0.3);
+}
+
+.drag-over {
+    border-color: #4299e1 !important;
+    background-color: rgba(66, 153, 225, 0.1) !important;
+    box-shadow: inset 0 0 0 3px #4299e1;
+    transform: scale(1.02);
+}
+
+/* 挿入位置インジケーター */
+.insertion-indicator {
+    width: 3px;
+    height: 40px;
+    background: linear-gradient(to bottom, #4299e1, #63b3ed);
+    border-radius: 2px;
+    margin: 0 2px;
+    animation: insertionPulse 1s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(66, 153, 225, 0.6);
+}
+
+.insertion-highlight {
+    background-color: rgba(66, 153, 225, 0.1) !important;
+    border-color: #4299e1 !important;
+    border-style: dashed !important;
+    animation: highlightPulse 1.5s ease-in-out infinite;
+}
+
+/* ドロップ成功アニメーション */
+.word-token.drop-success {
+    animation: dropSuccess 0.3s ease-out;
+}
+
+/* ドロップ失敗アニメーション */
+.word-token.drop-failed {
+    animation: dropFailed 0.4s ease-out;
+}
+
+/* ドラッグプレビュー（タッチデバイス用） */
+.drag-preview {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #4299e1;
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+}
+
+/* アニメーション定義 */
+@keyframes insertionPulse {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scaleY(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scaleY(1.2);
+    }
+}
+
+@keyframes highlightPulse {
+    0%, 100% {
+        background-color: rgba(66, 153, 225, 0.05);
+    }
+    50% {
+        background-color: rgba(66, 153, 225, 0.15);
+    }
+}
+
+@keyframes dropSuccess {
+    0% {
+        transform: scale(1.2);
+        background-color: rgba(72, 187, 120, 0.3);
+    }
+    50% {
+        transform: scale(1.1);
+        background-color: rgba(72, 187, 120, 0.2);
+    }
+    100% {
+        transform: scale(1);
+        background-color: transparent;
+    }
+}
+
+@keyframes dropFailed {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+        background-color: rgba(245, 101, 101, 0.2);
+    }
+    75% {
+        transform: translateX(10px);
+        background-color: rgba(245, 101, 101, 0.2);
+    }
+}
+
+/* カーソルスタイル */
+.word-token {
+    cursor: grab;
+}
+
+.word-token:active {
+    cursor: grabbing;
+}
+
+.word-token.dragging {
+    cursor: grabbing;
+}
+
+/* ドロップ不可能な状態 */
+.no-drop {
+    cursor: no-drop !important;
+}
+
+/* レスポンシブ対応 - ドラッグ&ドロップ */
+@media (max-width: 768px) {
+    .insertion-indicator {
+        height: 35px;
+        width: 4px;
+    }
+    
+    .drag-preview {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.6rem;
+    }
+    
+    .word-token.dragging {
+        transform: rotate(3deg) scale(1.03);
+    }
+}
+
+@media (max-width: 480px) {
+    .insertion-indicator {
+        height: 30px;
+        width: 4px;
+    }
+    
+    .drag-preview {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .word-token.dragging {
+        transform: rotate(2deg) scale(1.02);
+    }
+}
+
+/* タッチデバイス最適化 */
+@media (hover: none) and (pointer: coarse) {
+    .word-token {
+        cursor: default;
+    }
+    
+    .word-token:active {
+        cursor: default;
+    }
+    
+    /* タッチデバイスでのドラッグフィードバック強化 */
+    .word-token.dragging {
+        opacity: 0.8;
+        transform: rotate(3deg) scale(1.1);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* アクセシビリティ - ドラッグ&ドロップ */
+@media (prefers-reduced-motion: reduce) {
+    .word-token.dragging {
+        transform: none;
+        animation: none;
+    }
+    
+    .insertion-indicator {
+        animation: none;
+    }
+    
+    .insertion-highlight {
+        animation: none;
+    }
+    
+    .word-token.drop-success,
+    .word-token.drop-failed {
+        animation: none;
+    }
+    
+    .drag-over {
+        transform: none;
+    }
+}
+
+/* ハイコントラストモード - ドラッグ&ドロップ */
+@media (prefers-contrast: high) {
+    .word-token.dragging {
+        border-width: 4px;
+        border-color: #000;
+    }
+    
+    .drag-over {
+        border-width: 4px;
+        border-color: #0066cc;
+    }
+    
+    .insertion-indicator {
+        background: #0066cc;
+        width: 5px;
+    }
+}
+
+/* スクリーンリーダー専用（視覚的に隠す） */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 /* 
 ゲームオーバーレイ（アニメーション用） */
 .game-overlay {
