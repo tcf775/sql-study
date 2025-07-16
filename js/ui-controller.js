@@ -5,6 +5,8 @@ export class UIController {
         this.currentHintLevel = 0;
         this.wordReorderUI = null;
         this.sqlTokenizer = null;
+        this.currentChallengeType = null; // 現在選択されている問題タイプ
+        this.isMobile = this.detectMobileDevice(); // モバイルデバイス検出
         this.initializeElements();
         this.bindEvents();
         // ゲームオーバーレイを初期状態で非表示
@@ -81,9 +83,136 @@ export class UIController {
         });
         
         this.elements.toggleSidebar.addEventListener('click', () => this.toggleSidebar());
+        
+        // 問題タイプ選択のイベントリスナーを追加
+        this.bindChallengeTypeEvents();
     }
 
-    updateChallenge() {
+    /**
+     * モバイルデバイスを検出
+     * @returns {boolean} モバイルデバイスかどうか
+     */
+    detectMobileDevice() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone'];
+        
+        // ユーザーエージェントでの検出
+        const isMobileUA = mobileKeywords.some(keyword => userAgent.includes(keyword));
+        
+        // 画面サイズでの検出
+        const isMobileScreen = window.innerWidth <= 768;
+        
+        // タッチデバイスの検出
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        return isMobileUA || (isMobileScreen && isTouchDevice);
+    }
+    
+    /**
+     * 問題タイプ選択のイベントリスナーを設定
+     */
+    bindChallengeTypeEvents() {
+        const sqlEditorButton = document.getElementById('type-sql-editor');
+        const wordReorderButton = document.getElementById('type-word-reorder');
+        const typeDescriptionText = document.getElementById('type-description-text');
+        
+        if (sqlEditorButton && wordReorderButton) {
+            sqlEditorButton.addEventListener('click', () => {
+                this.switchChallengeType('challenge');
+                this.updateTypeButtons('challenge');
+                if (typeDescriptionText) {
+                    typeDescriptionText.textContent = 'SQLを直接入力して実行します';
+                }
+            });
+            
+            wordReorderButton.addEventListener('click', () => {
+                this.switchChallengeType('word-reorder');
+                this.updateTypeButtons('word-reorder');
+                if (typeDescriptionText) {
+                    typeDescriptionText.textContent = '単語をタップして正しい順序に並び替えます';
+                }
+            });
+        }
+    }
+    
+    /**
+     * 問題タイプボタンの表示を更新
+     * @param {string} activeType - アクティブなタイプ
+     */
+    updateTypeButtons(activeType) {
+        const sqlEditorButton = document.getElementById('type-sql-editor');
+        const wordReorderButton = document.getElementById('type-word-reorder');
+        
+        if (sqlEditorButton && wordReorderButton) {
+            sqlEditorButton.classList.toggle('active', activeType === 'challenge');
+            wordReorderButton.classList.toggle('active', activeType === 'word-reorder');
+        }
+    }
+    
+    /**
+     * 問題タイプを切り替え
+     * @param {string} type - 切り替える問題タイプ
+     */
+    switchChallengeType(type) {
+        this.currentChallengeType = type;
+        const challenge = this.gameEngine.getCurrentChallenge();
+        
+        // スライドタイプの場合は切り替えできない
+        if (challenge.type === 'slide') {
+            return;
+        }
+        
+        // 問題タイプに応じて表示を切り替え
+        if (type === 'word-reorder') {
+            this.showWordReorderChallenge(challenge);
+        } else {
+            this.showSQLChallenge();
+        }
+    }
+    
+    /**
+     * 問題タイプ選択UIの表示/非表示を制御
+     * @param {Object} challenge - 現在のチャレンジ
+     */
+    updateChallengeTypeSelector(challenge) {
+        const typeSelector = document.getElementById('challenge-type-selector');
+        
+        if (!typeSelector) return;
+        
+        // スライドタイプの場合は選択UIを非表示
+        if (challenge.type === 'slide') {
+            typeSelector.classList.add('hidden');
+            return;
+        }
+        
+        // SQL実行可能な問題の場合は選択UIを表示
+        if (challenge.solution) {
+            typeSelector.classList.remove('hidden');
+            
+            // デフォルトの問題タイプを設定
+            if (!this.currentChallengeType) {
+                this.currentChallengeType = this.isMobile ? 'word-reorder' : 'challenge';
+            }
+            
+            // ボタンの状態を更新
+            this.updateTypeButtons(this.currentChallengeType);
+            
+            // 説明文を更新
+            const typeDescriptionText = document.getElementById('type-description-text');
+            if (typeDescriptionText) {
+                typeDescriptionText.textContent = this.currentChallengeType === 'word-reorder' 
+                    ? '単語をタップして正しい順序に並び替えます'
+                    : 'SQLを直接入力して実行します';
+            }
+        } else {
+            typeSelector.classList.add('hidden');
+        }
+    }
+    
+    /**
+     * updateChallengeメソッドを拡張して問題タイプ選択を含める
+     */
+    updateChallengeWithTypeSelection() {
         const challenge = this.gameEngine.getCurrentChallenge();
         const progress = this.gameEngine.getProgress();
         
@@ -104,12 +233,15 @@ export class UIController {
         this.elements.prevButton.disabled = progress.current === 1;
         this.elements.nextButton.disabled = progress.current === progress.total;
         
+        // 問題タイプ選択UIを更新
+        this.updateChallengeTypeSelector(challenge);
+        
         // チャレンジタイプによって表示を切り替え
         console.log('Current challenge:', challenge.title, 'Type:', challenge.type);
         if (challenge.type === 'slide') {
             console.log('Showing slide challenge');
             this.showSlideChallenge(challenge);
-        } else if (challenge.type === 'word-reorder') {
+        } else if (challenge.type === 'word-reorder' || this.currentChallengeType === 'word-reorder') {
             console.log('Showing word-reorder challenge');
             this.showWordReorderChallenge(challenge);
         } else {
@@ -124,6 +256,11 @@ export class UIController {
         // エディタクリア
         this.elements.sqlEditor.value = '';
         this.clearResults();
+    }
+
+    updateChallenge() {
+        // 新しい問題タイプ選択機能付きのメソッドを呼び出し
+        this.updateChallengeWithTypeSelection();
     }
 
     async executeQuery() {
@@ -1012,5 +1149,175 @@ export class UIController {
             // ゲームアニメーション終了
             this.endGameAnimation();
         }
+    }
+    
+    /**
+     * モバイルデバイスを検出
+     * @returns {boolean} モバイルデバイスかどうか
+     */
+    detectMobileDevice() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone'];
+        
+        // ユーザーエージェントでの検出
+        const isMobileUA = mobileKeywords.some(keyword => userAgent.includes(keyword));
+        
+        // 画面サイズでの検出
+        const isMobileScreen = window.innerWidth <= 768;
+        
+        // タッチデバイスの検出
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        return isMobileUA || (isMobileScreen && isTouchDevice);
+    }
+    
+    /**
+     * 問題タイプ選択のイベントリスナーを設定
+     */
+    bindChallengeTypeEvents() {
+        const sqlEditorButton = document.getElementById('type-sql-editor');
+        const wordReorderButton = document.getElementById('type-word-reorder');
+        const typeDescriptionText = document.getElementById('type-description-text');
+        
+        if (sqlEditorButton && wordReorderButton) {
+            sqlEditorButton.addEventListener('click', () => {
+                this.switchChallengeType('challenge');
+                this.updateTypeButtons('challenge');
+                if (typeDescriptionText) {
+                    typeDescriptionText.textContent = 'SQLを直接入力して実行します';
+                }
+            });
+            
+            wordReorderButton.addEventListener('click', () => {
+                this.switchChallengeType('word-reorder');
+                this.updateTypeButtons('word-reorder');
+                if (typeDescriptionText) {
+                    typeDescriptionText.textContent = '単語をタップして正しい順序に並び替えます';
+                }
+            });
+        }
+    }
+    
+    /**
+     * 問題タイプボタンの表示を更新
+     * @param {string} activeType - アクティブなタイプ
+     */
+    updateTypeButtons(activeType) {
+        const sqlEditorButton = document.getElementById('type-sql-editor');
+        const wordReorderButton = document.getElementById('type-word-reorder');
+        
+        if (sqlEditorButton && wordReorderButton) {
+            sqlEditorButton.classList.toggle('active', activeType === 'challenge');
+            wordReorderButton.classList.toggle('active', activeType === 'word-reorder');
+        }
+    }
+    
+    /**
+     * 問題タイプを切り替え
+     * @param {string} type - 切り替える問題タイプ
+     */
+    switchChallengeType(type) {
+        this.currentChallengeType = type;
+        const challenge = this.gameEngine.getCurrentChallenge();
+        
+        // スライドタイプの場合は切り替えできない
+        if (challenge.type === 'slide') {
+            return;
+        }
+        
+        // 問題タイプに応じて表示を切り替え
+        if (type === 'word-reorder') {
+            this.showWordReorderChallenge(challenge);
+        } else {
+            this.showSQLChallenge();
+        }
+    }
+    
+    /**
+     * 問題タイプ選択UIの表示/非表示を制御
+     * @param {Object} challenge - 現在のチャレンジ
+     */
+    updateChallengeTypeSelector(challenge) {
+        const typeSelector = document.getElementById('challenge-type-selector');
+        
+        if (!typeSelector) return;
+        
+        // スライドタイプの場合は選択UIを非表示
+        if (challenge.type === 'slide') {
+            typeSelector.classList.add('hidden');
+            return;
+        }
+        
+        // SQL実行可能な問題の場合は選択UIを表示
+        if (challenge.solution) {
+            typeSelector.classList.remove('hidden');
+            
+            // デフォルトの問題タイプを設定
+            if (!this.currentChallengeType) {
+                this.currentChallengeType = this.isMobile ? 'word-reorder' : 'challenge';
+            }
+            
+            // ボタンの状態を更新
+            this.updateTypeButtons(this.currentChallengeType);
+            
+            // 説明文を更新
+            const typeDescriptionText = document.getElementById('type-description-text');
+            if (typeDescriptionText) {
+                typeDescriptionText.textContent = this.currentChallengeType === 'word-reorder' 
+                    ? '単語をタップして正しい順序に並び替えます'
+                    : 'SQLを直接入力して実行します';
+            }
+        } else {
+            typeSelector.classList.add('hidden');
+        }
+    }
+    
+    /**
+     * updateChallengeメソッドを拡張して問題タイプ選択を含める
+     */
+    updateChallengeWithTypeSelection() {
+        const challenge = this.gameEngine.getCurrentChallenge();
+        const progress = this.gameEngine.getProgress();
+        
+        this.elements.challengeTitle.textContent = challenge.title || 'タイトル未設定';
+        this.elements.challengeDescription.textContent = challenge.description || '';
+        this.elements.currentStage.textContent = progress.current;
+        this.elements.progressFill.style.width = `${progress.percentage}%`;
+        
+        // 難易度表示（デフォルト値を設定）
+        const difficulty = Math.min(Math.max(challenge.difficulty || 1, 1), 10);
+        const filledStars = Math.min(difficulty, 5);
+        const emptyStars = Math.max(5 - filledStars, 0);
+        this.elements.difficultyStars.innerHTML = '★'.repeat(filledStars) + 
+                                                  '☆'.repeat(emptyStars) +
+                                                  (difficulty > 5 ? ` (${difficulty}/10)` : '');
+        
+        // ボタン状態更新
+        this.elements.prevButton.disabled = progress.current === 1;
+        this.elements.nextButton.disabled = progress.current === progress.total;
+        
+        // 問題タイプ選択UIを更新
+        this.updateChallengeTypeSelector(challenge);
+        
+        // チャレンジタイプによって表示を切り替え
+        console.log('Current challenge:', challenge.title, 'Type:', challenge.type);
+        if (challenge.type === 'slide') {
+            console.log('Showing slide challenge');
+            this.showSlideChallenge(challenge);
+        } else if (challenge.type === 'word-reorder' || this.currentChallengeType === 'word-reorder') {
+            console.log('Showing word-reorder challenge');
+            this.showWordReorderChallenge(challenge);
+        } else {
+            console.log('Showing SQL challenge');
+            this.showSQLChallenge();
+        }
+        
+        // ヒントレベルリセット
+        this.currentHintLevel = 0;
+        this.hideHint();
+        
+        // エディタクリア
+        this.elements.sqlEditor.value = '';
+        this.clearResults();
     }
 }
