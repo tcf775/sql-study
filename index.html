@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,44 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/editor.css">
     <link rel="stylesheet" href="css/word-reorder.css">
+    <link rel="stylesheet" href="css/course-completion.css">
+    <link rel="stylesheet" href="css/course-system.css">
 </head>
+
 <body>
     <div id="app">
         <header class="header">
             <h1>🎮 SQL学習ゲーム</h1>
+            <div class="header-center">
+                <div id="current-course-info" class="current-course-info hidden">
+                    <span class="course-label">コース:</span>
+                    <span id="current-course-title">未選択</span>
+                    <button id="switch-course-btn" class="switch-course-btn" title="コースを変更">
+                        🔄
+                    </button>
+                </div>
+            </div>
             <div class="score-display">
                 <span>スコア: <span id="current-score">0</span></span>
                 <span>ステージ: <span id="current-stage">1</span></span>
+                <button id="show-progress-btn" class="show-progress-btn" title="学習進捗を表示">
+                    📈
+                </button>
             </div>
         </header>
+
+        <!-- コース選択画面 -->
+        <div id="course-selection-screen" class="course-selection-screen hidden">
+            <div class="course-selection-container">
+                <div class="course-selection-header">
+                    <h2>🎓 コースを選択してください</h2>
+                    <p>あなたのレベルと目標に合ったコースを選んで学習を始めましょう</p>
+                </div>
+                <div id="course-list" class="course-list">
+                    <!-- コース一覧がここに動的に生成されます -->
+                </div>
+            </div>
+        </div>
 
         <div class="app-layout">
             <aside class="sidebar">
@@ -30,87 +59,157 @@
                     </div>
                 </div>
             </aside>
-            
+
+            <!-- 進捗表示パネル -->
+            <div id="progress-panel" class="progress-panel hidden">
+                <div class="progress-panel-header">
+                    <h3>📈 学習進捗</h3>
+                    <button id="toggle-progress-panel" class="btn-toggle">→</button>
+                </div>
+                <div class="progress-panel-content">
+                    <!-- コース全体の進捗 -->
+                    <div class="course-progress-section">
+                        <div class="course-progress-header">
+                            <h4 id="current-course-name">コース名</h4>
+                            <span id="course-progress-percentage">0%</span>
+                        </div>
+                        <div class="course-progress-bar">
+                            <div id="course-progress-fill" class="progress-fill"></div>
+                        </div>
+                        <div class="course-progress-stats">
+                            <span id="completed-lessons-count">0</span> / <span id="total-lessons-count">0</span> レッスン完了
+                        </div>
+                    </div>
+
+                    <!-- モジュール進捗 -->
+                    <div class="modules-progress-section">
+                        <h4>📚 モジュール進捗</h4>
+                        <div id="modules-list" class="modules-list">
+                            <!-- モジュール一覧がここに動的に生成されます -->
+                        </div>
+                    </div>
+
+                    <!-- 現在のレッスン情報 -->
+                    <div class="current-lesson-section">
+                        <h4>📍 現在の位置</h4>
+                        <div id="current-lesson-info" class="current-lesson-info">
+                            <div class="lesson-position">
+                                <span id="current-module-name">モジュール名</span>
+                                <span class="lesson-separator">></span>
+                                <span id="current-lesson-name">レッスン名</span>
+                            </div>
+                            <div class="lesson-navigation">
+                                <button id="prev-lesson-btn" class="lesson-nav-btn" disabled>
+                                    ← 前のレッスン
+                                </button>
+                                <button id="next-lesson-btn" class="lesson-nav-btn" disabled>
+                                    次のレッスン →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学習統計 -->
+                    <div class="learning-stats-section">
+                        <h4>📊 学習統計</h4>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">総スコア</span>
+                                <span id="total-score" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">学習日数</span>
+                                <span id="learning-days" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">完了モジュール</span>
+                                <span id="completed-modules-count" class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <main class="main-content">
                 <section class="challenge-info">
-                <h2 id="challenge-title">データベースを初期化中...</h2>
-                <p id="challenge-description">しばらくお待ちください。</p>
-                <div class="challenge-meta">
-                    <div class="difficulty-indicator">
-                        <span>難易度: </span>
-                        <div id="difficulty-stars"></div>
-                    </div>
-                    
-                    <!-- 問題タイプ選択 -->
-                    <div id="challenge-type-selector" class="challenge-type-selector hidden">
-                        <span class="selector-label">問題形式:</span>
-                        <div class="type-toggle">
-                            <button id="type-sql-editor" class="type-button active" data-type="challenge">
-                                <span class="type-icon">💻</span>
-                                <span class="type-text">SQLエディター</span>
-                            </button>
-                            <button id="type-word-reorder" class="type-button" data-type="word-reorder">
-                                <span class="type-icon">🧩</span>
-                                <span class="type-text">単語並び替え</span>
-                            </button>
+                    <h2 id="challenge-title">データベースを初期化中...</h2>
+                    <p id="challenge-description">しばらくお待ちください。</p>
+                    <div class="challenge-meta">
+                        <div class="difficulty-indicator">
+                            <span>難易度: </span>
+                            <div id="difficulty-stars"></div>
                         </div>
-                        <div class="type-description">
-                            <span id="type-description-text">SQLを直接入力して実行します</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <section id="content-section" class="content-section">
-                <!-- SQLエディターセクション -->
-                <div id="sql-editor-section" class="sql-editor-section">
-                    <div class="editor-header">
-                        <h3>SQLクエリを入力してください</h3>
-                        <div class="editor-controls">
-                            <button id="run-query" class="btn btn-primary" disabled>実行</button>
-                            <button id="show-hint" class="btn btn-secondary">ヒント</button>
-                            <button id="show-solution" class="btn btn-warning">解答を見る</button>
+                        <!-- 問題タイプ選択 -->
+                        <div id="challenge-type-selector" class="challenge-type-selector hidden">
+                            <span class="selector-label">問題形式:</span>
+                            <div class="type-toggle">
+                                <button id="type-sql-editor" class="type-button active" data-type="challenge">
+                                    <span class="type-icon">💻</span>
+                                    <span class="type-text">SQLエディター</span>
+                                </button>
+                                <button id="type-word-reorder" class="type-button" data-type="word-reorder">
+                                    <span class="type-icon">🧩</span>
+                                    <span class="type-text">単語並び替え</span>
+                                </button>
+                            </div>
+                            <div class="type-description">
+                                <span id="type-description-text">SQLを直接入力して実行します</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="editor-container">
-                        <textarea id="sql-editor" placeholder="SELECT * FROM products;"></textarea>
-                        <div id="suggestions-dropdown" class="suggestions-dropdown hidden"></div>
-                    </div>
-                </div>
-                
-                <!-- スライドセクション -->
-                <div id="slide-section" class="slide-section hidden">
-                    <div class="slide-header">
-                        <h3 id="slide-title">解説スライド</h3>
-                    </div>
-                    <div class="slide-container">
-                        <iframe id="slide-iframe" src="" frameborder="0"></iframe>
-                    </div>
-                </div>
+                </section>
 
-                <!-- 単語並び替えセクション -->
-                <div id="word-reorder-section" class="word-reorder-section hidden">
-                    <!-- WordReorderUIクラスがここにコンテンツを動的に生成します -->
-                </div>
-            </section>
+                <section id="content-section" class="content-section">
+                    <!-- SQLエディターセクション -->
+                    <div id="sql-editor-section" class="sql-editor-section">
+                        <div class="editor-header">
+                            <h3>SQLクエリを入力してください</h3>
+                            <div class="editor-controls">
+                                <button id="run-query" class="btn btn-primary" disabled>実行</button>
+                                <button id="show-hint" class="btn btn-secondary">ヒント</button>
+                                <button id="show-solution" class="btn btn-warning">解答を見る</button>
+                            </div>
+                        </div>
+                        <div class="editor-container">
+                            <textarea id="sql-editor" placeholder="SELECT * FROM products;"></textarea>
+                            <div id="suggestions-dropdown" class="suggestions-dropdown hidden"></div>
+                        </div>
+                    </div>
 
-            <section class="results-section">
-                <div class="results-header">
-                    <h3>実行結果</h3>
-                    <div id="execution-status" class="status-indicator"></div>
-                </div>
-                <div id="query-results" class="results-container">
-                    <p class="no-results">クエリを実行すると結果がここに表示されます</p>
-                </div>
-            </section>
+                    <!-- スライドセクション -->
+                    <div id="slide-section" class="slide-section hidden">
+                        <div class="slide-header">
+                            <h3 id="slide-title">解説スライド</h3>
+                        </div>
+                        <div class="slide-container">
+                            <iframe id="slide-iframe" src="" frameborder="0"></iframe>
+                        </div>
+                    </div>
 
-            <section id="hint-panel" class="hint-panel hidden">
-                <div class="panel-header">
-                    <h3>💡 ヒント</h3>
-                    <button id="close-hint" class="btn-close">×</button>
-                </div>
-                <div id="hint-content" class="panel-content"></div>
-            </section>
+                    <!-- 単語並び替えセクション -->
+                    <div id="word-reorder-section" class="word-reorder-section hidden">
+                        <!-- WordReorderUIクラスがここにコンテンツを動的に生成します -->
+                    </div>
+                </section>
+
+                <section class="results-section">
+                    <div class="results-header">
+                        <h3>実行結果</h3>
+                        <div id="execution-status" class="status-indicator"></div>
+                    </div>
+                    <div id="query-results" class="results-container">
+                        <p class="no-results">クエリを実行すると結果がここに表示されます</p>
+                    </div>
+                </section>
+
+                <section id="hint-panel" class="hint-panel hidden">
+                    <div class="panel-header">
+                        <h3>💡 ヒント</h3>
+                        <button id="close-hint" class="btn-close">×</button>
+                    </div>
+                    <div id="hint-content" class="panel-content"></div>
+                </section>
             </main>
         </div>
 
@@ -161,13 +260,13 @@
                 </div>
                 <div class="robot-text">AIが回答を分析中...</div>
             </div>
-            
+
             <!-- 結果アニメーション -->
             <div id="result-animation" class="result-animation hidden">
                 <div id="result-icon" class="result-icon">🎉</div>
                 <div id="result-text" class="result-text">正解！</div>
             </div>
-            
+
             <!-- 成功時のクラッカーエフェクト -->
             <div id="success-effects" class="success-effects hidden">
                 <div class="cracker left-cracker"></div>
@@ -178,7 +277,7 @@
                     <div class="rocket rocket-3">✨</div>
                 </div>
             </div>
-            
+
             <!-- 失敗時のエフェクト -->
             <div id="failure-effects" class="failure-effects hidden">
                 <div class="shake-container">
@@ -201,6 +300,10 @@
         import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/+esm';
         window.duckdb = duckdb;
     </script>
+
+    <script type="module" src="js/error-handler.js"></script>
+    <script type="module" src="js/notification-system.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

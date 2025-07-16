@@ -1,0 +1,178 @@
+[
+    {
+        "type": "slide",
+        "title": "DDL（データ定義言語）の基本",
+        "content": "# DDL（データ定義言語）の基本\n\nDDL（Data Definition Language）は**データベース構造を定義**するためのSQL文です。\n\n## 主なDDL文\n\n- **CREATE**: テーブル、インデックス、ビューなどを作成\n- **ALTER**: 既存のテーブル構造を変更\n- **DROP**: テーブル、インデックス、ビューなどを削除\n- **TRUNCATE**: テーブルのデータを全削除\n\n## CREATE TABLEの基本構文\n\n```sql\nCREATE TABLE テーブル名 (\n    カラム名1 データ型 制約,\n    カラム名2 データ型 制約,\n    ...\n);\n```\n\n### 実例\n\n```sql\nCREATE TABLE employees (\n    employee_id INTEGER PRIMARY KEY,\n    name VARCHAR(100) NOT NULL,\n    email VARCHAR(255) UNIQUE,\n    hire_date DATE\n);\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "ddl-001",
+        "title": "社員テーブルを作成しよう",
+        "description": "社員情報を格納するemployeesテーブルを作成してください。employee_id（整数、主キー）、name（文字列、NOT NULL）、email（文字列、UNIQUE）、hire_date（日付）のカラムを含めてください。",
+        "difficulty": 3,
+        "hints": [
+            "CREATE TABLE文を使用します",
+            "PRIMARY KEY制約でemployee_idを主キーに設定します",
+            "NOT NULL制約でnameを必須項目に設定します",
+            "UNIQUE制約でemailの重複を防ぎます"
+        ],
+        "solution": "CREATE TABLE employees (employee_id INTEGER PRIMARY KEY, name VARCHAR(100) NOT NULL, email VARCHAR(255) UNIQUE, hire_date DATE)"
+    },
+    {
+        "type": "word-reorder",
+        "id": "ddl-002",
+        "title": "部署テーブルを作成しよう",
+        "description": "部署情報を格納するdepartmentsテーブルを作成してください。department_id（整数、主キー）、department_name（文字列、NOT NULL）、manager_id（整数）のカラムを含めてください。",
+        "difficulty": 3,
+        "hints": [
+            "CREATE TABLE文を使用します",
+            "department_idを主キーに設定します",
+            "department_nameを必須項目に設定します"
+        ],
+        "solution": "CREATE TABLE departments (department_id INTEGER PRIMARY KEY, department_name VARCHAR(100) NOT NULL, manager_id INTEGER)"
+    },
+    {
+        "type": "slide",
+        "title": "ALTER TABLEによるテーブル変更",
+        "content": "# ALTER TABLEによるテーブル変更\n\nALTER TABLE文を使用して**既存のテーブル構造を変更**できます。\n\n## 主な変更操作\n\n- **ADD COLUMN**: 新しいカラムを追加\n- **DROP COLUMN**: カラムを削除\n- **MODIFY/ALTER COLUMN**: カラムの定義を変更\n- **ADD CONSTRAINT**: 制約を追加\n- **DROP CONSTRAINT**: 制約を削除\n\n## 基本構文\n\n```sql\nALTER TABLE テーブル名 ADD COLUMN カラム名 データ型 制約;\nALTER TABLE テーブル名 DROP COLUMN カラム名;\n```\n\n### 実例\n\n```sql\nALTER TABLE employees ADD COLUMN salary DECIMAL(10,2);\nALTER TABLE employees ADD COLUMN department_id INTEGER;\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "ddl-003",
+        "title": "社員テーブルにカラムを追加しよう",
+        "description": "employeesテーブルにsalary（DECIMAL(10,2)）とdepartment_id（INTEGER）のカラムを追加してください。",
+        "difficulty": 4,
+        "hints": [
+            "ALTER TABLE文を使用します",
+            "ADD COLUMN句で新しいカラムを追加します",
+            "DECIMAL(10,2)は小数点以下2桁までの数値型です"
+        ],
+        "solution": "ALTER TABLE employees ADD COLUMN salary DECIMAL(10,2), ADD COLUMN department_id INTEGER"
+    },
+    {
+        "type": "slide",
+        "title": "DML（データ操作言語）の基本",
+        "content": "# DML（データ操作言語）の基本\n\nDML（Data Manipulation Language）は**データの操作**を行うためのSQL文です。\n\n## 主なDML文\n\n- **INSERT**: データの挿入\n- **UPDATE**: データの更新\n- **DELETE**: データの削除\n- **SELECT**: データの取得（既に学習済み）\n\n## INSERT文の基本構文\n\n```sql\nINSERT INTO テーブル名 (カラム1, カラム2, ...) \nVALUES (値1, 値2, ...);\n```\n\n### 実例\n\n```sql\nINSERT INTO employees (employee_id, name, email, hire_date) \nVALUES (1, '田中太郎', 'tanaka@example.com', '2023-04-01');\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "dml-001",
+        "title": "社員データを挿入しよう",
+        "description": "employeesテーブルに新しい社員データを挿入してください。employee_id=1, name='田中太郎', email='tanaka@example.com', hire_date='2023-04-01'のデータを挿入してください。",
+        "difficulty": 3,
+        "hints": [
+            "INSERT INTO文を使用します",
+            "VALUES句で挿入する値を指定します",
+            "文字列は引用符で囲みます",
+            "日付も引用符で囲みます"
+        ],
+        "solution": "INSERT INTO employees (employee_id, name, email, hire_date) VALUES (1, '田中太郎', 'tanaka@example.com', '2023-04-01')"
+    },
+    {
+        "type": "slide",
+        "title": "UPDATE文によるデータ更新",
+        "content": "# UPDATE文によるデータ更新\n\nUPDATE文を使用して**既存のデータを更新**できます。\n\n## 基本構文\n\n```sql\nUPDATE テーブル名 \nSET カラム1 = 値1, カラム2 = 値2, ...\nWHERE 条件;\n```\n\n## 重要な注意点\n\n- **WHERE句は必須**（省略すると全行が更新される）\n- 複数のカラムを同時に更新可能\n- 条件に一致する行のみが更新される\n\n### 実例\n\n```sql\nUPDATE employees \nSET salary = 500000, department_id = 1 \nWHERE employee_id = 1;\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "dml-002",
+        "title": "社員の給与を更新しよう",
+        "description": "employee_id=1の社員の給与を500000に、department_idを1に更新してください。",
+        "difficulty": 4,
+        "hints": [
+            "UPDATE文を使用します",
+            "SET句で更新する値を指定します",
+            "WHERE句で更新対象を限定します",
+            "複数のカラムはカンマで区切ります"
+        ],
+        "solution": "UPDATE employees SET salary = 500000, department_id = 1 WHERE employee_id = 1"
+    },
+    {
+        "type": "slide",
+        "title": "DELETE文によるデータ削除",
+        "content": "# DELETE文によるデータ削除\n\nDELETE文を使用して**データを削除**できます。\n\n## 基本構文\n\n```sql\nDELETE FROM テーブル名 WHERE 条件;\n```\n\n## 重要な注意点\n\n- **WHERE句は必須**（省略すると全行が削除される）\n- 削除されたデータは復元できない\n- 外部キー制約がある場合は削除できない場合がある\n\n### 実例\n\n```sql\nDELETE FROM employees WHERE employee_id = 1;\n```\n\n### 全データ削除（注意！）\n\n```sql\nDELETE FROM employees;  -- 全行削除\nTRUNCATE TABLE employees;  -- より高速な全行削除\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "dml-003",
+        "title": "退職した社員を削除しよう",
+        "description": "employee_id=1の社員データを削除してください。",
+        "difficulty": 3,
+        "hints": [
+            "DELETE FROM文を使用します",
+            "WHERE句で削除対象を限定します",
+            "WHERE句を忘れると全データが削除されるので注意"
+        ],
+        "solution": "DELETE FROM employees WHERE employee_id = 1"
+    },
+    {
+        "type": "slide",
+        "title": "制約（Constraints）の基本",
+        "content": "# 制約（Constraints）の基本\n\n制約を使用して**データの整合性**を保つことができます。\n\n## 主な制約の種類\n\n- **PRIMARY KEY**: 主キー制約（一意性 + NOT NULL）\n- **FOREIGN KEY**: 外部キー制約（参照整合性）\n- **UNIQUE**: 一意性制約\n- **NOT NULL**: NULL値を禁止\n- **CHECK**: 値の範囲や条件をチェック\n- **DEFAULT**: デフォルト値を設定\n\n## 外部キー制約の例\n\n```sql\nALTER TABLE employees \nADD CONSTRAINT fk_department \nFOREIGN KEY (department_id) \nREFERENCES departments(department_id);\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "constraint-001",
+        "title": "外部キー制約を追加しよう",
+        "description": "employeesテーブルのdepartment_idカラムに、departmentsテーブルのdepartment_idを参照する外部キー制約を追加してください。制約名はfk_departmentとしてください。",
+        "difficulty": 5,
+        "hints": [
+            "ALTER TABLE文を使用します",
+            "ADD CONSTRAINT句で制約を追加します",
+            "FOREIGN KEY句で外部キーを定義します",
+            "REFERENCES句で参照先テーブルとカラムを指定します"
+        ],
+        "solution": "ALTER TABLE employees ADD CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES departments(department_id)"
+    },
+    {
+        "type": "word-reorder",
+        "id": "constraint-002",
+        "title": "CHECK制約を追加しよう",
+        "description": "employeesテーブルのsalaryカラムに、給与が0以上であることをチェックするCHECK制約を追加してください。制約名はchk_salary_positiveとしてください。",
+        "difficulty": 5,
+        "hints": [
+            "ALTER TABLE文を使用します",
+            "ADD CONSTRAINT句で制約を追加します",
+            "CHECK句で条件を指定します",
+            "salary >= 0の条件を設定します"
+        ],
+        "solution": "ALTER TABLE employees ADD CONSTRAINT chk_salary_positive CHECK (salary >= 0)"
+    },
+    {
+        "type": "slide",
+        "title": "データの検証とクレンジング",
+        "content": "# データの検証とクレンジング\n\nDuckDBでは**データ品質の確保**が重要です。\n\n## データ検証の手法\n\n- **NULL値のチェック**: IS NULL / IS NOT NULL\n- **重複データの確認**: DISTINCT, GROUP BY\n- **データ型の確認**: typeof()関数\n- **範囲チェック**: BETWEEN, 比較演算子\n\n## データクレンジングの例\n\n```sql\n-- NULL値を持つ行を確認\nSELECT COUNT(*) FROM employees WHERE name IS NULL;\n\n-- 重複データを確認\nSELECT email, COUNT(*) \nFROM employees \nGROUP BY email \nHAVING COUNT(*) > 1;\n\n-- データ型を確認\nSELECT typeof(salary) FROM employees LIMIT 1;\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "validation-001",
+        "title": "NULL値をチェックしよう",
+        "description": "employeesテーブルでnameカラムがNULLの行数を確認してください。",
+        "difficulty": 3,
+        "hints": [
+            "COUNT(*)で行数をカウントします",
+            "WHERE句でIS NULLを使用します",
+            "NULL値の確認は重要なデータ品質チェックです"
+        ],
+        "solution": "SELECT COUNT(*) FROM employees WHERE name IS NULL"
+    },
+    {
+        "type": "slide",
+        "title": "データのエクスポートとバックアップ",
+        "content": "# データのエクスポートとバックアップ\n\nDuckDBでは**様々な形式でデータをエクスポート**できます。\n\n## CSVエクスポート\n\n```sql\nCOPY employees TO 'backup/employees.csv' (HEADER, DELIMITER ',');\n```\n\n## Parquetエクスポート\n\n```sql\nCOPY employees TO 'backup/employees.parquet' (FORMAT PARQUET);\n```\n\n## JSONエクスポート\n\n```sql\nCOPY employees TO 'backup/employees.json' (FORMAT JSON);\n```\n\n## テーブル全体のバックアップ\n\n```sql\n-- 新しいテーブルとして保存\nCREATE TABLE employees_backup AS SELECT * FROM employees;\n```"
+    },
+    {
+        "type": "word-reorder",
+        "id": "export-001",
+        "title": "データをCSVでエクスポートしよう",
+        "description": "employeesテーブルのデータをemployees_backup.csvファイルにエクスポートしてください。ヘッダー付きで出力してください。",
+        "difficulty": 4,
+        "hints": [
+            "COPY文を使用します",
+            "TO句でファイルパスを指定します",
+            "HEADERオプションでヘッダー行を含めます",
+            "DELIMITER ','でカンマ区切りを指定します"
+        ],
+        "solution": "COPY employees TO 'employees_backup.csv' (HEADER, DELIMITER ',')"
+    }
+]

@@ -140,6 +140,24 @@ export class DuckDBManager {
 
     async executeQuery(sql) {
         if (!this.isInitialized) {
+            // ErrorHandlerを使用してデータベースエラーを処理
+            if (window.errorHandler) {
+                const result = await window.errorHandler.handleError('DATABASE_ERROR', 
+                    new Error('データベースが初期化されていません'), {
+                    operation: 'executeQuery',
+                    sql: sql.substring(0, 100) // SQLの最初の100文字のみログ
+                });
+                
+                if (result.success && result.action === 'offline_mode') {
+                    // オフラインモードの場合は制限された結果を返す
+                    return {
+                        success: false,
+                        error: 'オフラインモードのため、SQLクエリを実行できません',
+                        offline: true
+                    };
+                }
+            }
+            
             throw new Error('データベースが初期化されていません');
         }
 

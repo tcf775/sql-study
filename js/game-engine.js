@@ -7,6 +7,9 @@ export class GameEngine {
         this.attempts = 0;
         this.startTime = Date.now();
         this.slideManager = null;
+        this.currentCourse = null;
+        this.courseManager = null;
+        this.adaptiveLearning = null;
     }
 
     setSlideManager(slideManager) {
@@ -39,6 +42,12 @@ export class GameEngine {
     }
 
     nextChallenge() {
+        // コースが設定されている場合はコース対応版を使用
+        if (this.currentCourse && this.courseManager) {
+            return this.courseAwareNextChallenge();
+        }
+        
+        // 従来の動作
         if (this.currentChallengeIndex < this.challenges.length - 1) {
             this.currentChallengeIndex++;
             this.attempts = 0;
@@ -49,6 +58,12 @@ export class GameEngine {
     }
 
     previousChallenge() {
+        // コースが設定されている場合はコース対応版を使用
+        if (this.currentCourse && this.courseManager) {
+            return this.courseAwarePreviousChallenge();
+        }
+        
+        // 従来の動作
         if (this.currentChallengeIndex > 0) {
             this.currentChallengeIndex--;
             this.attempts = 0;
@@ -58,50 +73,234 @@ export class GameEngine {
         return false;
     }
 
+    /**
+     * コース対応の次のチャレンジ
+     */
+    courseAwareNextChallenge() {
+        // 次に利用可能なチャレンジを取得
+        const nextAvailable = this.getNextAvailableChallenge();
+        
+        if (nextAvailable) {
+            // アクセス制御をチェック
+            const accessResult = this.courseManager.attemptLessonAccess(
+                this.currentCourse.id, 
+                nextAvailable.challenge.lessonId
+            );
+            
+            if (accessResult.success) {
+                this.currentChallengeIndex = nextAvailable.index;
+                this.attempts = 0;
+                this.hintsUsed = 0;
+                this.startTime = Date.now();
+                console.log(`次のレッスンに移動: ${nextAvailable.challenge.lessonId}`);
+                return true;
+            } else {
+                console.warn(`次のレッスンへのアクセスが拒否されました: ${accessResult.error}`);
+                return false;
+            }
+        }
+        
+        // 利用可能なチャレンジがない場合は従来の動作
+        if (this.currentChallengeIndex < this.challenges.length - 1) {
+            const nextIndex = this.currentChallengeIndex + 1;
+            const nextChallenge = this.challenges[nextIndex];
+            
+            // レッスンIDがある場合はアクセス制御をチェック
+            if (nextChallenge.lessonId) {
+                const accessResult = this.courseManager.attemptLessonAccess(
+                    this.currentCourse.id, 
+                    nextChallenge.lessonId
+                );
+                
+                if (!accessResult.success) {
+                    console.warn(`レッスンアクセス拒否: ${accessResult.error}`);
+                    console.log(`推奨アクション: ${accessResult.suggestedAction}`);
+                    return false;
+                }
+            }
+            
+            this.currentChallengeIndex = nextIndex;
+            this.attempts = 0;
+            this.hintsUsed = 0;
+            this.startTime = Date.now();
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * コース対応の前のチャレンジ
+     */
+    courseAwarePreviousChallenge() {
+        if (this.currentChallengeIndex > 0) {
+            // 前のチャレンジに移動
+            this.currentChallengeIndex--;
+            this.attempts = 0;
+            this.hintsUsed = 0;
+            this.startTime = Date.now();
+            
+            // 前のチャレンジがアンロックされているかチェック
+            const challenge = this.getCurrentChallenge();
+            if (challenge.lessonId && !this.courseManager.isLessonUnlocked(this.currentCourse.id, challenge.lessonId)) {
+                // アンロックされていない場合は、アンロックされている最後のチャレンジを探す
+                for (let i = this.currentChallengeIndex; i >= 0; i--) {
+                    const prevChallenge = this.challenges[i];
+                    if (!prevChallenge.lessonId || this.courseManager.isLessonUnlocked(this.currentCourse.id, prevChallenge.lessonId)) {
+                        this.currentChallengeIndex = i;
+                        return true;
+                    }
+                }
+                
+                // アンロックされたチャレンジが見つからない場合は最初に戻る
+                this.currentChallengeIndex = 0;
+                return false;
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * 前のチャレンジに移動可能かチェック
+     */
+    canGoPrevious() {
+        if (this.currentCourse && this.courseManager) {
+            return this.canGoPreviousCourseAware();
+        }
+        
+        // 従来の動作
+        return this.currentChallengeIndex > 0;
+    }
+
+    /**
+     * 次のチャレンジに移動可能かチェック
+     */
+    canGoNext() {
+        if (this.currentCourse && this.courseManager) {
+            return this.canGoNextCourseAware();
+        }
+        
+        // 従来の動作
+        return this.currentChallengeIndex < this.challenges.length - 1;
+    }
+
+    /**
+     * コース対応の前のチャレンジ移動可能チェック
+     */
+    canGoPreviousCourseAware() {
+        if (this.currentChallengeIndex <= 0) {
+            return false;
+        }
+        
+        // 前のチャレンジがアンロックされているかチェック
+        for (let i = this.currentChallengeIndex - 1; i >= 0; i--) {
+            const challenge = this.challenges[i];
+            if (!challenge.lessonId || this.courseManager.isLessonUnlocked(this.currentCourse.id, challenge.lessonId)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * コース対応の次のチャレンジ移動可能チェック
+     */
+    canGoNextCourseAware() {
+        // 次に利用可能なチャレンジがあるかチェック
+        const nextAvailable = this.getNextAvailableChallenge();
+        if (nextAvailable) {
+            // アクセス制御をチェック
+            const accessResult = this.courseManager.attemptLessonAccess(
+                this.currentCourse.id, 
+                nextAvailable.challenge.lessonId
+            );
+            return accessResult.success;
+        }
+        
+        // 従来の方法でチェック
+        if (this.currentChallengeIndex < this.challenges.length - 1) {
+            const nextChallenge = this.challenges[this.currentChallengeIndex + 1];
+            if (nextChallenge.lessonId) {
+                return this.courseManager.isLessonUnlocked(this.currentCourse.id, nextChallenge.lessonId);
+            }
+            return true;
+        }
+        
+        return false;
+    }
+
     checkAnswer(result) {
         const challenge = this.getCurrentChallenge();
         this.attempts++;
 
         // スライドタイプの場合は常に正解
         if (challenge.type === 'slide') {
+            const challengeData = {
+                correct: true,
+                score: 0,
+                attempts: this.attempts,
+                hintsUsed: this.hintsUsed,
+                timeSpent: Date.now() - this.startTime,
+                challenge: challenge
+            };
+            this.trackPerformanceData(challengeData);
+            
             return {
                 correct: true,
                 message: "スライドを確認しました！"
             };
         }
 
+        let isCorrect = false;
+        let errorType = null;
+        let message = "";
+
         if (!result.success) {
-            return {
-                correct: false,
-                message: `エラー: ${result.error}`
-            };
+            errorType = 'syntax';
+            message = `エラー: ${result.error}`;
+        } else if (!challenge.expectedColumns) {
+            isCorrect = true;
+            message = "正解です！";
+        } else {
+            // 列名チェック
+            const expectedCols = challenge.expectedColumns.sort();
+            const actualCols = result.columns.sort();
+
+            if (JSON.stringify(expectedCols) !== JSON.stringify(actualCols)) {
+                errorType = 'column';
+                message = `期待される列: ${expectedCols.join(', ')}\n実際の列: ${actualCols.join(', ')}`;
+            } else {
+                isCorrect = true;
+                message = "正解です！";
+            }
         }
 
-        // expectedColumnsが存在しない場合はスキップ
-        if (!challenge.expectedColumns) {
-            return {
-                correct: true,
-                message: "正解です！"
-            };
+        // パフォーマンスデータを記録
+        const challengeData = {
+            correct: isCorrect,
+            score: isCorrect ? this.calculateScore() : 0,
+            attempts: this.attempts,
+            hintsUsed: this.hintsUsed,
+            timeSpent: Date.now() - this.startTime,
+            challenge: challenge,
+            errorType: errorType
+        };
+
+        this.trackPerformanceData(challengeData);
+
+        // 正解の場合のみ進捗を更新
+        if (isCorrect) {
+            this.onChallengeCompleted();
         }
-
-        // 列名チェック
-        const expectedCols = challenge.expectedColumns.sort();
-        const actualCols = result.columns.sort();
-
-        if (JSON.stringify(expectedCols) !== JSON.stringify(actualCols)) {
-            return {
-                correct: false,
-                message: `期待される列: ${expectedCols.join(', ')}\n実際の列: ${actualCols.join(', ')}`
-            };
-        }
-
-        // 正解の場合
-        this.calculateScore();
+        
         return {
-            correct: true,
-            message: "正解です！",
-            score: this.score
+            correct: isCorrect,
+            message: message,
+            score: isCorrect ? challengeData.score : 0
         };
     }
 
@@ -115,6 +314,17 @@ export class GameEngine {
         this.attempts++;
 
         if (!userSQL || userSQL.trim() === '') {
+            const challengeData = {
+                correct: false,
+                score: 0,
+                attempts: this.attempts,
+                hintsUsed: this.hintsUsed,
+                timeSpent: Date.now() - this.startTime,
+                challenge: challenge,
+                errorType: 'incomplete'
+            };
+            this.trackPerformanceData(challengeData);
+            
             return {
                 correct: false,
                 message: "SQLを構築してください"
@@ -133,46 +343,79 @@ export class GameEngine {
                 window.dbManager.executeQuery(challenge.solution)
             ]);
 
+            let isCorrect = false;
+            let errorType = null;
+            let message = "";
+
             // ユーザーのSQLでエラーが発生した場合
             if (!userResult.success) {
-                return {
-                    correct: false,
-                    message: `SQLエラー: ${userResult.error}`
-                };
+                errorType = 'syntax';
+                message = `SQLエラー: ${userResult.error}`;
             }
-
             // 正解SQLでエラーが発生した場合（チャレンジデータの問題）
-            if (!correctResult.success) {
+            else if (!correctResult.success) {
                 console.error('正解SQLでエラーが発生:', correctResult.error);
-                return {
-                    correct: false,
-                    message: "チャレンジデータに問題があります。管理者に報告してください。"
-                };
+                errorType = 'system';
+                message = "チャレンジデータに問題があります。管理者に報告してください。";
             }
-
             // 結果を比較
-            const isCorrect = this.compareQueryResults(userResult, correctResult);
-
-            if (isCorrect) {
-                this.calculateScore();
-                return {
-                    correct: true,
-                    message: "正解です！素晴らしい！",
-                    score: this.score,
-                    userResult: userResult,
-                    correctResult: correctResult
-                };
-            } else {
-                return {
-                    correct: false,
-                    message: "結果が正解と一致しません。もう一度確認してください。",
-                    userResult: userResult,
-                    correctResult: correctResult
-                };
+            else {
+                isCorrect = this.compareQueryResults(userResult, correctResult);
+                
+                if (isCorrect) {
+                    message = "正解です！素晴らしい！";
+                } else {
+                    errorType = 'logic';
+                    message = "結果が正解と一致しません。もう一度確認してください。";
+                }
             }
+
+            // パフォーマンスデータを記録
+            const challengeData = {
+                correct: isCorrect,
+                score: isCorrect ? this.calculateScore() : 0,
+                attempts: this.attempts,
+                hintsUsed: this.hintsUsed,
+                timeSpent: Date.now() - this.startTime,
+                challenge: challenge,
+                errorType: errorType
+            };
+
+            this.trackPerformanceData(challengeData);
+
+            // 正解の場合のみ進捗を更新
+            if (isCorrect) {
+                this.onChallengeCompleted();
+            }
+
+            const result = {
+                correct: isCorrect,
+                message: message,
+                score: isCorrect ? challengeData.score : 0
+            };
+
+            // 結果データを含める（デバッグ用）
+            if (userResult && correctResult) {
+                result.userResult = userResult;
+                result.correctResult = correctResult;
+            }
+
+            return result;
 
         } catch (error) {
             console.error('SQL実行エラー:', error);
+            
+            const challengeData = {
+                correct: false,
+                score: 0,
+                attempts: this.attempts,
+                hintsUsed: this.hintsUsed,
+                timeSpent: Date.now() - this.startTime,
+                challenge: challenge,
+                errorType: 'system'
+            };
+            this.trackPerformanceData(challengeData);
+            
             return {
                 correct: false,
                 message: `実行エラー: ${error.message}`
@@ -270,6 +513,21 @@ export class GameEngine {
 
         const challengeScore = Math.max(10, baseScore - attemptPenalty - hintPenalty + timeBonus);
         this.score += challengeScore;
+        return challengeScore;
+    }
+
+    /**
+     * パフォーマンスデータを追跡
+     */
+    trackPerformanceData(challengeData) {
+        if (this.adaptiveLearning && this.adaptiveLearning.isInitialized() && 
+            this.currentCourse && challengeData.challenge && challengeData.challenge.lessonId) {
+            this.adaptiveLearning.trackPerformance(
+                this.currentCourse.id, 
+                challengeData.challenge.lessonId, 
+                challengeData
+            );
+        }
     }
 
     getHint(level = 0) {
@@ -295,5 +553,541 @@ export class GameEngine {
         this.hintsUsed = 0;
         this.attempts = 0;
         this.startTime = Date.now();
+    }
+
+    /**
+     * CourseManagerを設定
+     */
+    setCourseManager(courseManager) {
+        this.courseManager = courseManager;
+    }
+
+    /**
+     * AdaptiveLearningを設定
+     */
+    setAdaptiveLearning(adaptiveLearning) {
+        this.adaptiveLearning = adaptiveLearning;
+    }
+
+    /**
+     * 現在のコースを設定
+     */
+    async setCourse(course) {
+        this.currentCourse = course;
+        
+        // コースに基づいてチャレンジを読み込み
+        await this.loadCourseChallenge();
+        
+        // 進捗に基づいて現在のチャレンジインデックスを設定
+        this.setCurrentChallengeFromProgress();
+    }
+
+    /**
+     * 現在のコースのチャレンジを読み込み
+     */
+    async loadCourseChallenge() {
+        if (!this.currentCourse || !this.courseManager) {
+            console.warn('コースまたはCourseManagerが設定されていません');
+            return;
+        }
+
+        try {
+            // コースの全レッスンIDを取得
+            const allLessons = [];
+            this.currentCourse.modules.forEach(module => {
+                module.lessons.forEach(lessonId => {
+                    allLessons.push(lessonId);
+                });
+            });
+
+            // 各レッスンのチャレンジデータを取得
+            this.challenges = [];
+            for (const lessonId of allLessons) {
+                const challenge = this.courseManager.getCurrentCourseChallenge(lessonId);
+                if (challenge) {
+                    this.challenges.push({
+                        ...challenge,
+                        lessonId: lessonId
+                    });
+                } else {
+                    console.warn(`チャレンジが見つかりません: ${lessonId}`);
+                }
+            }
+
+            console.log(`コース "${this.currentCourse.title}" のチャレンジを読み込みました: ${this.challenges.length}個`);
+            
+        } catch (error) {
+            console.error('コースチャレンジ読み込みエラー:', error);
+            // フォールバック: デフォルトチャレンジを読み込み
+            await this.loadChallenges();
+        }
+    }
+
+    /**
+     * 進捗に基づいて現在のチャレンジインデックスを設定
+     */
+    setCurrentChallengeFromProgress() {
+        if (!this.currentCourse || !this.courseManager) {
+            return;
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        if (!progress) {
+            this.currentChallengeIndex = 0;
+            return;
+        }
+
+        // 完了していない最初のレッスンを見つける
+        for (let i = 0; i < this.challenges.length; i++) {
+            const challenge = this.challenges[i];
+            if (challenge.lessonId && !progress.completedLessons.includes(challenge.lessonId)) {
+                // レッスンがアンロックされているかチェック
+                if (this.courseManager.isLessonUnlocked(this.currentCourse.id, challenge.lessonId)) {
+                    this.currentChallengeIndex = i;
+                    return;
+                }
+            }
+        }
+
+        // 全て完了している場合は最後のチャレンジ
+        this.currentChallengeIndex = Math.max(0, this.challenges.length - 1);
+    }
+
+    /**
+     * 現在のコースの進捗を取得
+     */
+    getCurrentCourseProgress() {
+        if (!this.currentCourse || !this.courseManager) {
+            return this.getProgress();
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        if (!progress) {
+            return this.getProgress();
+        }
+
+        const totalLessons = this.challenges.length;
+        const completedLessons = progress.completedLessons.length;
+
+        return {
+            current: completedLessons + 1,
+            total: totalLessons,
+            percentage: totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0,
+            courseProgress: progress,
+            isCompleted: progress.isCompleted,
+            totalScore: progress.totalScore || 0,
+            completedModules: progress.completedModules.length,
+            totalModules: this.currentCourse.modules.length
+        };
+    }
+
+    /**
+     * コースに基づいてフィルタされたチャレンジを取得
+     */
+    getFilteredChallenges() {
+        if (!this.currentCourse) {
+            return this.challenges;
+        }
+
+        // 現在のコースのレッスンのみを返す
+        return this.challenges.filter(challenge => {
+            if (!challenge.lessonId) return true;
+            
+            // レッスンがコースに含まれているかチェック
+            for (const module of this.currentCourse.modules) {
+                if (module.lessons.includes(challenge.lessonId)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    /**
+     * チャレンジ完了時の処理（コース対応）
+     */
+    onChallengeCompleted() {
+        const challenge = this.getCurrentChallenge();
+        
+        if (this.currentCourse && this.courseManager && challenge.lessonId) {
+            // コースの進捗を更新
+            this.courseManager.updateProgress(this.currentCourse.id, challenge.lessonId, this.score);
+            console.log(`レッスン完了: ${challenge.lessonId}`);
+            
+            // 適応的学習システムでパフォーマンスを追跡
+            if (this.adaptiveLearning && this.adaptiveLearning.isInitialized()) {
+                const challengeData = {
+                    correct: true,
+                    score: this.score,
+                    attempts: this.attempts,
+                    hintsUsed: this.hintsUsed,
+                    timeSpent: Date.now() - this.startTime,
+                    challenge: challenge
+                };
+                this.adaptiveLearning.trackPerformance(this.currentCourse.id, challenge.lessonId, challengeData);
+            }
+            
+            // ProgressUIに進捗更新を通知
+            if (window.progressUI && typeof window.progressUI.onProgressUpdated === 'function') {
+                window.progressUI.onProgressUpdated();
+            }
+        }
+    }
+
+
+
+    /**
+     * 指定されたレッスンに現在のチャレンジを設定（アクセス制御付き）
+     */
+    setCurrentLesson(lessonId) {
+        // コースが設定されている場合はアクセス制御をチェック
+        if (this.currentCourse && this.courseManager) {
+            const accessResult = this.courseManager.attemptLessonAccess(this.currentCourse.id, lessonId);
+            if (!accessResult.success) {
+                console.warn(`レッスンアクセス拒否: ${accessResult.error}`);
+                console.log(`推奨アクション: ${accessResult.suggestedAction}`);
+                return {
+                    success: false,
+                    error: accessResult.error,
+                    suggestedAction: accessResult.suggestedAction
+                };
+            }
+        }
+
+        // レッスンを検索して設定
+        for (let i = 0; i < this.challenges.length; i++) {
+            const challenge = this.challenges[i];
+            if (challenge.lessonId === lessonId) {
+                this.currentChallengeIndex = i;
+                this.attempts = 0;
+                this.hintsUsed = 0;
+                this.startTime = Date.now();
+                console.log(`レッスンに移動: ${lessonId}`);
+                return {
+                    success: true,
+                    lessonId: lessonId,
+                    challengeIndex: i
+                };
+            }
+        }
+        
+        return {
+            success: false,
+            error: `レッスン ${lessonId} が見つかりません`,
+            suggestedAction: 'コースデータを確認してください'
+        };
+    }
+
+    /**
+     * レッスンアクセス試行（UI用）
+     */
+    attemptLessonAccess(lessonId) {
+        if (!this.currentCourse || !this.courseManager) {
+            return this.setCurrentLesson(lessonId);
+        }
+
+        const accessResult = this.courseManager.attemptLessonAccess(this.currentCourse.id, lessonId);
+        
+        if (accessResult.success) {
+            return this.setCurrentLesson(lessonId);
+        } else {
+            // ErrorHandlerを使用して不正アクセスを処理
+            if (window.errorHandler) {
+                const errorResult = window.errorHandler.handleError('INVALID_ACCESS', new Error(accessResult.error), {
+                    courseId: this.currentCourse.id,
+                    lessonId: lessonId,
+                    currentProgress: this.courseManager.getCurrentCourseProgress(),
+                    attemptedAction: 'lesson_access',
+                    lessonLocked: !this.courseManager.isLessonUnlocked(this.currentCourse.id, lessonId)
+                });
+                
+                return {
+                    success: false,
+                    error: accessResult.error,
+                    suggestedAction: accessResult.suggestedAction,
+                    lessonId: lessonId,
+                    errorHandled: true,
+                    errorResult: errorResult
+                };
+            }
+            
+            return {
+                success: false,
+                error: accessResult.error,
+                suggestedAction: accessResult.suggestedAction,
+                lessonId: lessonId
+            };
+        }
+    }
+
+    /**
+     * コース完了判定
+     */
+    isCourseCompleted() {
+        if (!this.currentCourse || !this.courseManager) {
+            return false;
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        return progress ? progress.isCompleted : false;
+    }
+
+    /**
+     * モジュール完了判定
+     */
+    isModuleCompleted(moduleId) {
+        if (!this.currentCourse || !this.courseManager) {
+            return false;
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        return progress ? progress.completedModules.includes(moduleId) : false;
+    }
+
+    /**
+     * 現在のモジュールを取得
+     */
+    getCurrentModule() {
+        if (!this.currentCourse) {
+            return null;
+        }
+
+        const challenge = this.getCurrentChallenge();
+        if (!challenge || !challenge.lessonId) {
+            return null;
+        }
+
+        // レッスンが属するモジュールを見つける
+        for (const module of this.currentCourse.modules) {
+            if (module.lessons.includes(challenge.lessonId)) {
+                return module;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * コース全体のスコア計算
+     */
+    calculateCourseScore() {
+        if (!this.currentCourse || !this.courseManager) {
+            return 0;
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        if (!progress) {
+            return 0;
+        }
+
+        // 基本スコア（完了したレッスン数に基づく）
+        const completedLessons = progress.completedLessons.length;
+        const totalLessons = this.challenges.length;
+        const completionRatio = totalLessons > 0 ? completedLessons / totalLessons : 0;
+        
+        // 完了ボーナス
+        const completionBonus = progress.isCompleted ? 500 : 0;
+        
+        // モジュール完了ボーナス
+        const moduleBonus = progress.completedModules.length * 100;
+        
+        // 時間ボーナス（早期完了）
+        let timeBonus = 0;
+        if (progress.startDate && progress.lastAccessed) {
+            const startTime = new Date(progress.startDate).getTime();
+            const endTime = new Date(progress.lastAccessed).getTime();
+            const hoursSpent = (endTime - startTime) / (1000 * 60 * 60);
+            const estimatedHours = this.currentCourse.estimatedHours || 8;
+            
+            if (hoursSpent < estimatedHours) {
+                timeBonus = Math.max(0, (estimatedHours - hoursSpent) * 10);
+            }
+        }
+
+        return Math.floor((progress.totalScore || 0) + completionBonus + moduleBonus + timeBonus);
+    }
+
+    /**
+     * 次に利用可能なチャレンジを取得
+     */
+    getNextAvailableChallenge() {
+        if (!this.currentCourse || !this.courseManager) {
+            return null;
+        }
+
+        for (let i = this.currentChallengeIndex + 1; i < this.challenges.length; i++) {
+            const challenge = this.challenges[i];
+            if (challenge.lessonId && this.courseManager.isLessonUnlocked(this.currentCourse.id, challenge.lessonId)) {
+                return {
+                    index: i,
+                    challenge: challenge
+                };
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * コース進捗の詳細情報を取得
+     */
+    getCourseProgressDetails() {
+        if (!this.currentCourse || !this.courseManager) {
+            return null;
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        if (!progress) {
+            return null;
+        }
+
+        const moduleProgress = this.currentCourse.modules.map(module => {
+            const completedLessonsInModule = module.lessons.filter(lessonId => 
+                progress.completedLessons.includes(lessonId)
+            ).length;
+
+            return {
+                id: module.id,
+                title: module.title,
+                totalLessons: module.lessons.length,
+                completedLessons: completedLessonsInModule,
+                isCompleted: progress.completedModules.includes(module.id),
+                percentage: module.lessons.length > 0 ? (completedLessonsInModule / module.lessons.length) * 100 : 0
+            };
+        });
+
+        return {
+            courseId: this.currentCourse.id,
+            courseTitle: this.currentCourse.title,
+            totalScore: this.calculateCourseScore(),
+            isCompleted: progress.isCompleted,
+            totalLessons: this.challenges.length,
+            completedLessons: progress.completedLessons.length,
+            totalModules: this.currentCourse.modules.length,
+            completedModules: progress.completedModules.length,
+            moduleProgress: moduleProgress,
+            startDate: progress.startDate,
+            lastAccessed: progress.lastAccessed
+        };
+    }
+
+    /**
+     * 学習統計を取得
+     */
+    getLearningStats() {
+        if (!this.currentCourse || !this.courseManager) {
+            return null;
+        }
+
+        const progressDetails = this.getCourseProgressDetails();
+        if (!progressDetails) {
+            return null;
+        }
+
+        const averageScore = progressDetails.completedLessons > 0 ? 
+            progressDetails.totalScore / progressDetails.completedLessons : 0;
+
+        let studyTime = 0;
+        if (progressDetails.startDate && progressDetails.lastAccessed) {
+            const startTime = new Date(progressDetails.startDate).getTime();
+            const endTime = new Date(progressDetails.lastAccessed).getTime();
+            studyTime = (endTime - startTime) / (1000 * 60 * 60); // 時間単位
+        }
+
+        return {
+            totalScore: progressDetails.totalScore,
+            averageScore: Math.round(averageScore),
+            studyTimeHours: Math.round(studyTime * 10) / 10,
+            completionRate: progressDetails.completedLessons / progressDetails.totalLessons,
+            moduleCompletionRate: progressDetails.completedModules / progressDetails.totalModules,
+            estimatedTimeRemaining: this.calculateEstimatedTimeRemaining()
+        };
+    }
+
+    /**
+     * 残り推定時間を計算
+     */
+    calculateEstimatedTimeRemaining() {
+        if (!this.currentCourse || !this.courseManager) {
+            return 0;
+        }
+
+        const progress = this.courseManager.getCurrentCourseProgress();
+        if (!progress) {
+            return this.currentCourse.estimatedHours || 0;
+        }
+
+        const totalLessons = this.challenges.length;
+        const completedLessons = progress.completedLessons.length;
+        const remainingLessons = totalLessons - completedLessons;
+        
+        if (remainingLessons <= 0) {
+            return 0;
+        }
+
+        const estimatedHours = this.currentCourse.estimatedHours || 8;
+        const remainingRatio = remainingLessons / totalLessons;
+        
+        return Math.round(estimatedHours * remainingRatio * 10) / 10;
+    }
+
+    /**
+     * 適応的学習の推奨事項を取得
+     */
+    getAdaptiveLearningRecommendations() {
+        if (!this.adaptiveLearning || !this.adaptiveLearning.isInitialized() || !this.currentCourse) {
+            return null;
+        }
+
+        const challenge = this.getCurrentChallenge();
+        if (!challenge || !challenge.lessonId) {
+            return null;
+        }
+
+        return this.adaptiveLearning.recommendNextLesson(this.currentCourse.id, challenge.lessonId);
+    }
+
+    /**
+     * 困難な概念を取得
+     */
+    getDifficultConcepts() {
+        if (!this.adaptiveLearning || !this.adaptiveLearning.isInitialized() || !this.currentCourse) {
+            return [];
+        }
+
+        return this.adaptiveLearning.detectDifficultConcepts(this.currentCourse.id);
+    }
+
+    /**
+     * 追加練習問題を取得
+     */
+    getAdditionalPractice(conceptId) {
+        if (!this.adaptiveLearning || !this.adaptiveLearning.isInitialized() || !this.currentCourse) {
+            return null;
+        }
+
+        return this.adaptiveLearning.suggestAdditionalPractice(this.currentCourse.id, conceptId);
+    }
+
+    /**
+     * 学習レポートを生成
+     */
+    generateLearningReport() {
+        if (!this.adaptiveLearning || !this.adaptiveLearning.isInitialized() || !this.currentCourse) {
+            return null;
+        }
+
+        return this.adaptiveLearning.generateLearningReport(this.currentCourse.id);
+    }
+
+    /**
+     * ユーザーの習熟度を分析
+     */
+    analyzeUserProficiency() {
+        if (!this.adaptiveLearning || !this.adaptiveLearning.isInitialized() || !this.currentCourse) {
+            return null;
+        }
+
+        return this.adaptiveLearning.analyzeUserProficiency(this.currentCourse.id);
     }
 }

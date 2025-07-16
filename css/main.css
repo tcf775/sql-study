@@ -25,6 +25,55 @@ body {
     font-size: 1.5rem;
 }
 
+.header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.current-course-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f7fafc;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.current-course-info.hidden {
+    display: none;
+}
+
+.course-label {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+#current-course-title {
+    font-size: 0.9rem;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.switch-course-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    color: #718096;
+}
+
+.switch-course-btn:hover {
+    background: #e2e8f0;
+    color: #4a5568;
+    transform: rotate(90deg);
+}
+
 .score-display {
     display: flex;
     gap: 2rem;
@@ -1186,4 +1235,904 @@ th {
         justify-content: flex-start;
         padding: 0.75rem;
     }
+}
+
+/* ===== コース選択画面 ===== */
+
+.course-selection-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.course-selection-screen.hidden {
+    display: none;
+}
+
+.course-selection-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.course-selection-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+}
+
+.course-selection-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.course-selection-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.course-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+.course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.course-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-icon {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    color: white;
+}
+
+.course-title-section h3 {
+    font-size: 1.5rem;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+}
+
+.course-difficulty {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.course-difficulty.beginner {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.course-difficulty.intermediate {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.course-difficulty.advanced {
+    background: #bee3f8;
+    color: #2a4365;
+}
+
+.course-description {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.course-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.course-meta-icon {
+    font-size: 1.1rem;
+}
+
+.course-progress {
+    margin-bottom: 1.5rem;
+}
+
+.course-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.course-progress-label {
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.course-progress-percentage {
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+.course-progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.course-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #38a169);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.course-modules {
+    margin-bottom: 1.5rem;
+}
+
+.course-modules-header {
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.course-modules-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.course-module-tag {
+    padding: 0.25rem 0.75rem;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    color: #4a5568;
+}
+
+.course-module-tag.completed {
+    background: #c6f6d5;
+    border-color: #9ae6b4;
+    color: #22543d;
+}
+
+.course-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.course-select-btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.course-select-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.course-select-btn.continue {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+}
+
+.course-select-btn.continue:hover {
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+}
+
+.course-info-btn {
+    padding: 0.75rem;
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.course-info-btn:hover {
+    border-color: #cbd5e0;
+    color: #4a5568;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .course-selection-screen {
+        padding: 1rem;
+    }
+    
+    .course-selection-header h2 {
+        font-size: 2rem;
+    }
+    
+    .course-selection-header p {
+        font-size: 1rem;
+    }
+    
+    .course-list {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        padding: 1.5rem;
+    }
+    
+    .course-meta {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .course-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-selection-header h2 {
+        font-size: 1.75rem;
+    }
+    
+    .course-card {
+        padding: 1.25rem;
+    }
+    
+    .course-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .course-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* ===== コース情報モーダル ===== */
+
+.course-info-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.course-info-modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.course-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.course-info-header h2 {
+    color: #2d3748;
+    margin: 0;
+}
+
+.course-info-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #718096;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.course-info-close:hover {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.course-info-body {
+    padding: 2rem;
+}
+
+.course-overview {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.course-overview p {
+    margin: 0.5rem 0;
+    color: #4a5568;
+}
+
+.course-description-full {
+    margin-bottom: 2rem;
+}
+
+.course-description-full h3 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.course-modules-detail h3 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+}
+
+.module-detail {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.module-detail:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.module-detail.completed {
+    background: #f0fff4;
+    border-color: #9ae6b4;
+}
+
+.module-detail h4 {
+    color: #2d3748;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.module-detail p {
+    color: #4a5568;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+.module-progress {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+}
+
+.module-prerequisites {
+    font-size: 0.8rem;
+    color: #e53e3e;
+    font-style: italic;
+}
+
+.course-info-actions {
+    padding: 1rem 2rem 2rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.course-info-actions .course-select-btn {
+    min-width: 200px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .course-info-overlay {
+        padding: 1rem;
+    }
+    
+    .course-info-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .course-info-body {
+        padding: 1.5rem;
+    }
+    
+    .course-info-actions {
+        padding: 1rem 1.5rem 1.5rem;
+    }
+    
+    .module-detail {
+        padding: 1rem;
+    }
+}
+/* ====
+= 進捗表示パネル ===== */
+
+.progress-panel {
+    width: 320px;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    z-index: 90;
+    order: 3;
+}
+
+.progress-panel.hidden {
+    transform: translateX(100%);
+}
+
+.progress-panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.progress-panel-header h3 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1rem;
+}
+
+.progress-panel-content {
+    padding: 1rem;
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+}
+
+/* コース全体の進捗セクション */
+.course-progress-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.course-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.course-progress-header h4 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+#course-progress-percentage {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.course-progress-bar {
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.course-progress-bar .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.course-progress-stats {
+    font-size: 0.9rem;
+    color: #718096;
+    text-align: center;
+}
+
+/* モジュール進捗セクション */
+.modules-progress-section {
+    margin-bottom: 1.5rem;
+}
+
+.modules-progress-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.modules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.module-item {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.module-item:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.module-item.completed {
+    background: #f0fff4;
+    border-color: #9ae6b4;
+}
+
+.module-item.current {
+    background: #ebf8ff;
+    border-color: #90cdf4;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.1);
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.module-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.module-status {
+    font-size: 1rem;
+}
+
+.module-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.module-progress-text {
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+.module-progress-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    flex: 1;
+    margin: 0 0.5rem;
+}
+
+.module-progress-bar .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #38a169);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.module-lessons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.lesson-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.lesson-dot.completed {
+    background: #48bb78;
+}
+
+.lesson-dot.current {
+    background: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+}
+
+.lesson-dot:hover::after {
+    content: attr(data-lesson-name);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2d3748;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    z-index: 100;
+}
+
+/* 現在のレッスン情報セクション */
+.current-lesson-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #fff5f5;
+    border-radius: 8px;
+    border-left: 4px solid #f56565;
+}
+
+.current-lesson-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.current-lesson-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lesson-position {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.lesson-separator {
+    color: #a0aec0;
+    font-weight: bold;
+}
+
+#current-module-name {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+#current-lesson-name {
+    font-weight: 600;
+    color: #e53e3e;
+}
+
+.lesson-navigation {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.lesson-nav-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    color: #4a5568;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lesson-nav-btn:hover:not(:disabled) {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+}
+
+.lesson-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 学習統計セクション */
+.learning-stats-section {
+    padding: 1rem;
+    background: #fffaf0;
+    border-radius: 8px;
+    border-left: 4px solid #ed8936;
+}
+
+.learning-stats-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #fed7d7;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* アプリレイアウトの調整 */
+.app-layout {
+    display: flex;
+    min-height: calc(100vh - 80px);
+}
+
+.main-content {
+    flex: 1;
+    max-width: none;
+    margin: 0;
+    padding: 2rem;
+    display: grid;
+    gap: 1.5rem;
+    order: 2;
+}
+
+.sidebar {
+    order: 1;
+}
+
+/* 進捗パネル表示時のレイアウト調整 */
+.app-layout:has(.progress-panel:not(.hidden)) .main-content {
+    margin-right: 0;
+}
+
+/* レスポンシブ対応 - 進捗パネル */
+@media (max-width: 1200px) {
+    .progress-panel {
+        width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .progress-panel {
+        position: fixed;
+        top: 80px;
+        right: 0;
+        height: calc(100vh - 80px);
+        width: 300px;
+        z-index: 200;
+    }
+    
+    .progress-panel.hidden {
+        transform: translateX(100%);
+    }
+    
+    .progress-panel:not(.hidden) {
+        transform: translateX(0);
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .lesson-navigation {
+        flex-direction: column;
+    }
+}/*
+ 進捗表示ボタン */
+.show-progress-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    color: #4a5568;
+    margin-left: 1rem;
+}
+
+.show-progress-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    transform: scale(1.1);
+}
+
+.show-progress-btn:active {
+    transform: scale(0.95);
 }

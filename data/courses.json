@@ -1,0 +1,148 @@
+{
+  "courses": [
+    {
+      "id": "sql-basics",
+      "title": "SQL基礎コース",
+      "description": "非エンジニアがデータを抽出できるようになるためのSELECT文の使い方から始まる参照中心の講座",
+      "targetAudience": "非エンジニア",
+      "difficulty": "初級",
+      "estimatedHours": 8,
+      "modules": [
+        {
+          "id": "module-1",
+          "title": "SELECT文の基本",
+          "description": "基本的なデータ取得方法を学習",
+          "lessons": ["challenge-001", "challenge-002"],
+          "prerequisites": []
+        },
+        {
+          "id": "module-2",
+          "title": "データの絞り込み",
+          "description": "WHERE句を使った条件指定",
+          "lessons": ["challenge-003", "challenge-004"],
+          "prerequisites": ["module-1"]
+        },
+        {
+          "id": "module-3",
+          "title": "データの並び替えと制限",
+          "description": "ORDER BYとLIMITを使ったデータ操作",
+          "lessons": ["challenge-005", "challenge-006", "challenge-007"],
+          "prerequisites": ["module-2"]
+        },
+        {
+          "id": "module-4",
+          "title": "集約関数の基本",
+          "description": "COUNT、SUM、AVGなどの基本的な集約",
+          "lessons": ["challenge-008", "challenge-009"],
+          "prerequisites": ["module-3"]
+        },
+        {
+          "id": "module-5",
+          "title": "グループ化と集計",
+          "description": "GROUP BYとHAVINGを使った集計",
+          "lessons": ["challenge-010", "challenge-011", "challenge-012"],
+          "prerequisites": ["module-4"]
+        },
+        {
+          "id": "module-6",
+          "title": "テーブル結合の基本",
+          "description": "JOINを使った複数テーブルの結合",
+          "lessons": ["challenge-013", "challenge-014", "challenge-015"],
+          "prerequisites": ["module-5"]
+        },
+        {
+          "id": "module-7",
+          "title": "サブクエリと応用",
+          "description": "副問い合わせと実践的なクエリ",
+          "lessons": ["challenge-016", "challenge-017"],
+          "prerequisites": ["module-6"]
+        }
+      ]
+    },
+    {
+      "id": "db-fundamentals",
+      "title": "DB基礎コース",
+      "description": "エンジニアがテーブルの作り方や変更方法、INSERT,UPDATE,DELETEなどを学ぶための講座",
+      "targetAudience": "エンジニア",
+      "difficulty": "中級",
+      "estimatedHours": 12,
+      "status": "coming_soon",
+      "modules": [
+        {
+          "id": "module-1",
+          "title": "DDL（データ定義言語）",
+          "description": "テーブルの作成と変更",
+          "lessons": ["ddl-001", "ddl-002", "ddl-003"],
+          "prerequisites": []
+        },
+        {
+          "id": "module-2",
+          "title": "DML（データ操作言語）",
+          "description": "データの挿入、更新、削除",
+          "lessons": ["dml-001", "dml-002", "dml-003"],
+          "prerequisites": ["module-1"]
+        },
+        {
+          "id": "module-3",
+          "title": "制約とインデックス",
+          "description": "データ整合性とパフォーマンス最適化",
+          "lessons": ["constraint-001", "constraint-002", "index-001"],
+          "prerequisites": ["module-2"]
+        },
+        {
+          "id": "module-4",
+          "title": "トランザクション管理",
+          "description": "ACID特性とトランザクション制御",
+          "lessons": ["transaction-001", "transaction-002"],
+          "prerequisites": ["module-3"]
+        }
+      ]
+    },
+    {
+      "id": "big-data-basics",
+      "title": "大規模データ基礎コース",
+      "description": "duckdbの特性を活かした大規模データをETLしたり集計する手法を学ぶための講座",
+      "targetAudience": "データ専門家",
+      "difficulty": "上級",
+      "estimatedHours": 16,
+      "status": "coming_soon",
+      "modules": [
+        {
+          "id": "module-1",
+          "title": "DuckDBの特徴",
+          "description": "分析用データベースの特性を理解",
+          "lessons": ["duckdb-001", "duckdb-002"],
+          "prerequisites": []
+        },
+        {
+          "id": "module-2",
+          "title": "大規模データの読み込み",
+          "description": "CSV、Parquet、JSONファイルの効率的な処理",
+          "lessons": ["etl-001", "etl-002", "etl-003"],
+          "prerequisites": ["module-1"]
+        },
+        {
+          "id": "module-3",
+          "title": "高度な集計とウィンドウ関数",
+          "description": "分析に必要な高度なSQL技術",
+          "lessons": ["analytics-001", "analytics-002", "analytics-003"],
+          "prerequisites": ["module-2"]
+        },
+        {
+          "id": "module-4",
+          "title": "パフォーマンス最適化",
+          "description": "大規模データ処理の最適化技術",
+          "lessons": ["performance-001", "performance-002"],
+          "prerequisites": ["module-3"]
+        },
+        {
+          "id": "module-5",
+          "title": "ETLパイプライン構築",
+          "description": "実践的なデータパイプライン設計",
+          "lessons": ["pipeline-001", "pipeline-002", "pipeline-003"],
+          "prerequisites": ["module-4"]
+        }
+      ]
+    }
+  ]
+}

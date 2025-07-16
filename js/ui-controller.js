@@ -7,6 +7,8 @@ export class UIController {
         this.sqlTokenizer = null;
         this.currentChallengeType = null; // 現在選択されている問題タイプ
         this.isMobile = this.detectMobileDevice(); // モバイルデバイス検出
+        this.courseManager = null; // CourseManagerの参照
+        this.currentCourse = null; // 現在選択されているコース
         this.initializeElements();
         this.bindEvents();
         // ゲームオーバーレイを初期状態で非表示
@@ -83,6 +85,12 @@ export class UIController {
         });
         
         this.elements.toggleSidebar.addEventListener('click', () => this.toggleSidebar());
+        
+        // コース切り替えボタンのイベントリスナー
+        const switchCourseBtn = document.getElementById('switch-course-btn');
+        if (switchCourseBtn) {
+            switchCourseBtn.addEventListener('click', () => this.switchCourse());
+        }
         
         // 問題タイプ選択のイベントリスナーを追加
         this.bindChallengeTypeEvents();
@@ -261,6 +269,383 @@ export class UIController {
     updateChallenge() {
         // 新しい問題タイプ選択機能付きのメソッドを呼び出し
         this.updateChallengeWithTypeSelection();
+        
+        // コースシステムが有効な場合は追加の更新処理を実行
+        if (this.courseManager && this.currentCourse) {
+            this.updateCourseDisplay();
+        }
+    }
+
+    /**
+     * コース選択時の処理
+     */
+    onCourseSelected(course) {
+        console.log(`UIController: コースが選択されました - ${course.title}`);
+        this.currentCourse = course;
+        this.updateCourseInfo(course);
+        
+        // コース選択画面を非表示にしてメイン画面を表示
+        this.hideCourseSelection();
+        
+        // コース表示を更新
+        this.updateCourseDisplay();
+        
+        // チャレンジを更新
+        this.updateChallenge();
+    }
+
+    /**
+     * コース情報を更新
+     */
+    updateCourseInfo(course) {
+        const courseInfo = document.getElementById('current-course-info');
+        const courseTitle = document.getElementById('current-course-title');
+        
+        if (courseInfo && courseTitle) {
+            if (course) {
+                courseTitle.textContent = course.title;
+                courseInfo.classList.remove('hidden');
+            } else {
+                courseInfo.classList.add('hidden');
+            }
+        }
+    }
+
+    /**
+     * コース切り替え処理
+     */
+    switchCourse() {
+        if (window.courseUI && typeof window.courseUI.switchCourse === 'function') {
+            window.courseUI.switchCourse();
+        }
+    }
+
+    /**
+     * CourseManagerを設定
+     * @param {CourseManager} courseManager - CourseManagerのインスタンス
+     */
+    setCourseManager(courseManager) {
+        this.courseManager = courseManager;
+    }
+
+    /**
+     * コースシステムの初期化
+     */
+    initializeCourseUI() {
+        // コース関連のUI要素を初期化
+        this.updateCourseDisplay();
+        
+        // 進捗表示ボタンのイベントリスナー
+        const showProgressBtn = document.getElementById('show-progress-btn');
+        if (showProgressBtn) {
+            showProgressBtn.addEventListener('click', () => this.toggleProgressPanel());
+        }
+        
+        // 進捗パネルの閉じるボタン
+        const toggleProgressPanel = document.getElementById('toggle-progress-panel');
+        if (toggleProgressPanel) {
+            toggleProgressPanel.addEventListener('click', () => this.toggleProgressPanel());
+        }
+        
+        console.log('コースUI初期化完了');
+    }
+
+    /**
+     * コース表示を更新
+     */
+    updateCourseDisplay() {
+        if (!this.courseManager) return;
+        
+        const currentCourse = this.courseManager.getCurrentCourse();
+        this.currentCourse = currentCourse;
+        
+        // ヘッダーのコース情報を更新
+        this.updateCourseInfo(currentCourse);
+        
+        // 進捗情報を更新
+        this.updateProgressDisplay();
+        
+        // ナビゲーションを更新
+        this.updateCourseNavigation();
+    }
+
+    /**
+     * 進捗表示を更新
+     */
+    updateProgressDisplay() {
+        if (!this.courseManager || !this.currentCourse) return;
+        
+        const progress = this.courseManager.getCourseProgress(this.currentCourse.id);
+        if (!progress) return;
+        
+        // コース名を更新
+        const courseNameElement = document.getElementById('current-course-name');
+        if (courseNameElement) {
+            courseNameElement.textContent = this.currentCourse.title;
+        }
+        
+        // 進捗パーセンテージを計算
+        const totalLessons = this.currentCourse.modules.reduce((total, module) => 
+            total + module.lessons.length, 0
+        );
+        const completedLessons = progress.completedLessons.length;
+        const progressPercentage = totalLessons > 0 ? 
+            Math.round((completedLessons / totalLessons) * 100) : 0;
+        
+        // 進捗バーを更新
+        const progressFillElement = document.getElementById('course-progress-fill');
+        const progressPercentageElement = document.getElementById('course-progress-percentage');
+        const completedLessonsElement = document.getElementById('completed-lessons-count');
+        const totalLessonsElement = document.getElementById('total-lessons-count');
+        
+        if (progressFillElement) {
+            progressFillElement.style.width = `${progressPercentage}%`;
+        }
+        if (progressPercentageElement) {
+            progressPercentageElement.textContent = `${progressPercentage}%`;
+        }
+        if (completedLessonsElement) {
+            completedLessonsElement.textContent = completedLessons;
+        }
+        if (totalLessonsElement) {
+            totalLessonsElement.textContent = totalLessons;
+        }
+        
+        // モジュール進捗を更新
+        this.updateModulesDisplay();
+        
+        // 現在のレッスン情報を更新
+        this.updateCurrentLessonDisplay();
+        
+        // 学習統計を更新
+        this.updateLearningStats();
+    }
+
+    /**
+     * モジュール表示を更新
+     */
+    updateModulesDisplay() {
+        if (!this.courseManager || !this.currentCourse) return;
+        
+        const progress = this.courseManager.getCourseProgress(this.currentCourse.id);
+        if (!progress) return;
+        
+        const modulesList = document.getElementById('modules-list');
+        if (!modulesList) return;
+        
+        const modulesHtml = this.currentCourse.modules.map(module => {
+            const isCompleted = progress.completedModules.includes(module.id);
+            const completedLessonsInModule = module.lessons.filter(lessonId => 
+                progress.completedLessons.includes(lessonId)
+            ).length;
+            const moduleProgress = module.lessons.length > 0 ? 
+                Math.round((completedLessonsInModule / module.lessons.length) * 100) : 0;
+            
+            const isUnlocked = this.courseManager.isModuleUnlocked(this.currentCourse.id, module.id);
+            
+            return `
+                <div class="module-item ${isCompleted ? 'completed' : ''} ${!isUnlocked ? 'locked' : ''}">
+                    <div class="module-header">
+                        <div class="module-info">
+                            <span class="module-icon">${isCompleted ? '✅' : (isUnlocked ? '📚' : '🔒')}</span>
+                            <span class="module-title">${module.title}</span>
+                        </div>
+                        <div class="module-progress-info">
+                            <span class="module-progress-text">${completedLessonsInModule}/${module.lessons.length}</span>
+                            <span class="module-progress-percentage">${moduleProgress}%</span>
+                        </div>
+                    </div>
+                    <div class="module-progress-bar">
+                        <div class="module-progress-fill" style="width: ${moduleProgress}%"></div>
+                    </div>
+                    <div class="module-description">${module.description}</div>
+                    ${module.prerequisites.length > 0 ? 
+                        `<div class="module-prerequisites">前提: ${module.prerequisites.join(', ')}</div>` : 
+                        ''
+                    }
+                </div>
+            `;
+        }).join('');
+        
+        modulesList.innerHTML = modulesHtml;
+    }
+
+    /**
+     * 現在のレッスン表示を更新
+     */
+    updateCurrentLessonDisplay() {
+        if (!this.courseManager || !this.currentCourse) return;
+        
+        const currentChallenge = this.gameEngine.getCurrentChallenge();
+        if (!currentChallenge) return;
+        
+        // 現在のチャレンジがどのモジュールに属するかを特定
+        let currentModule = null;
+        for (const module of this.currentCourse.modules) {
+            if (module.lessons.includes(currentChallenge.id)) {
+                currentModule = module;
+                break;
+            }
+        }
+        
+        const currentModuleElement = document.getElementById('current-module-name');
+        const currentLessonElement = document.getElementById('current-lesson-name');
+        
+        if (currentModuleElement && currentModule) {
+            currentModuleElement.textContent = currentModule.title;
+        }
+        if (currentLessonElement) {
+            currentLessonElement.textContent = currentChallenge.title || currentChallenge.id;
+        }
+        
+        // レッスンナビゲーションボタンの状態を更新
+        this.updateLessonNavigationButtons();
+    }
+
+    /**
+     * レッスンナビゲーションボタンの状態を更新
+     */
+    updateLessonNavigationButtons() {
+        const prevLessonBtn = document.getElementById('prev-lesson-btn');
+        const nextLessonBtn = document.getElementById('next-lesson-btn');
+        
+        if (prevLessonBtn) {
+            prevLessonBtn.disabled = !this.gameEngine.canGoPrevious();
+            prevLessonBtn.addEventListener('click', () => this.previousChallenge());
+        }
+        
+        if (nextLessonBtn) {
+            nextLessonBtn.disabled = !this.gameEngine.canGoNext();
+            nextLessonBtn.addEventListener('click', () => this.nextChallenge());
+        }
+    }
+
+    /**
+     * 学習統計を更新
+     */
+    updateLearningStats() {
+        if (!this.courseManager || !this.currentCourse) return;
+        
+        const progress = this.courseManager.getCourseProgress(this.currentCourse.id);
+        if (!progress) return;
+        
+        const totalScoreElement = document.getElementById('total-score');
+        const learningDaysElement = document.getElementById('learning-days');
+        const completedModulesElement = document.getElementById('completed-modules-count');
+        
+        if (totalScoreElement) {
+            totalScoreElement.textContent = progress.totalScore || 0;
+        }
+        
+        if (learningDaysElement && progress.startDate) {
+            const startDate = new Date(progress.startDate);
+            const currentDate = new Date();
+            const daysDiff = Math.ceil((currentDate - startDate) / (1000 * 60 * 60 * 24));
+            learningDaysElement.textContent = daysDiff;
+        }
+        
+        if (completedModulesElement) {
+            completedModulesElement.textContent = progress.completedModules.length;
+        }
+    }
+
+    /**
+     * 進捗パネルの表示/非表示を切り替え
+     */
+    toggleProgressPanel() {
+        const progressPanel = document.getElementById('progress-panel');
+        const toggleButton = document.getElementById('toggle-progress-panel');
+        
+        if (progressPanel) {
+            const isHidden = progressPanel.classList.contains('hidden');
+            
+            if (isHidden) {
+                progressPanel.classList.remove('hidden');
+                if (toggleButton) toggleButton.textContent = '→';
+                // 進捗情報を更新
+                this.updateProgressDisplay();
+            } else {
+                progressPanel.classList.add('hidden');
+                if (toggleButton) toggleButton.textContent = '←';
+            }
+        }
+    }
+
+    /**
+     * コースナビゲーションを更新
+     */
+    updateCourseNavigation() {
+        if (!this.courseManager || !this.currentCourse) return;
+        
+        // 現在のチャレンジに基づいてナビゲーションボタンの状態を更新
+        const progress = this.gameEngine.getProgress();
+        
+        // 前/次ボタンの状態を更新
+        this.elements.prevButton.disabled = progress.current === 1;
+        this.elements.nextButton.disabled = progress.current === progress.total;
+        
+        // コース固有のナビゲーション情報を表示
+        this.updateCourseSpecificNavigation();
+    }
+
+    /**
+     * コース固有のナビゲーション情報を更新
+     */
+    updateCourseSpecificNavigation() {
+        if (!this.courseManager || !this.currentCourse) return;
+        
+        const currentChallenge = this.gameEngine.getCurrentChallenge();
+        if (!currentChallenge) return;
+        
+        // 次のレッスンがアンロックされているかチェック
+        const nextLesson = this.courseManager.getNextLesson(this.currentCourse.id);
+        
+        // 次のレッスンボタンの表示を調整
+        if (nextLesson) {
+            const isNextLessonUnlocked = this.courseManager.isLessonUnlocked(
+                this.currentCourse.id, 
+                nextLesson.lessonId
+            );
+            
+            if (!isNextLessonUnlocked) {
+                this.elements.nextButton.disabled = true;
+                this.elements.nextButton.title = '前のレッスンを完了してください';
+            }
+        }
+    }
+
+    /**
+     * コース選択処理
+     */
+    handleCourseSelection() {
+        // コース選択画面を表示
+        this.showCourseSelection();
+    }
+
+    /**
+     * コース選択画面を表示
+     */
+    showCourseSelection() {
+        const courseSelectionScreen = document.getElementById('course-selection-screen');
+        const appLayout = document.querySelector('.app-layout');
+        
+        if (courseSelectionScreen && appLayout) {
+            courseSelectionScreen.classList.remove('hidden');
+            appLayout.style.display = 'none';
+        }
+    }
+
+    /**
+     * コース選択画面を非表示
+     */
+    hideCourseSelection() {
+        const courseSelectionScreen = document.getElementById('course-selection-screen');
+        const appLayout = document.querySelector('.app-layout');
+        
+        if (courseSelectionScreen && appLayout) {
+            courseSelectionScreen.classList.add('hidden');
+            appLayout.style.display = 'flex';
+        }
     }
 
     async executeQuery() {
@@ -285,6 +670,8 @@ export class UIController {
                 this.showSuccess(answer.message);
                 this.displayResults(result);
                 this.updateScore();
+                
+                // コース進捗は GameEngine.checkAnswer() 内で既に更新されている
                 
                 // 次の問題へのボタンを有効化
                 if (this.gameEngine.currentChallengeIndex < this.gameEngine.challenges.length - 1) {
@@ -1319,5 +1706,87 @@ export class UIController {
         // エディタクリア
         this.elements.sqlEditor.value = '';
         this.clearResults();
+    }
+
+    /**
+     * コース完了時の処理
+     * @param {Object} completionResult - コース完了結果
+     */
+    onCourseCompleted(completionResult) {
+        console.log('UIController: コース完了イベントを受信:', completionResult);
+        
+        // 進捗UIを更新
+        if (window.progressUI && typeof window.progressUI.onCourseCompleted === 'function') {
+            window.progressUI.onCourseCompleted(completionResult);
+        }
+        
+        // 現在のチャレンジを一時停止
+        this.pauseCurrentChallenge();
+        
+        // コース完了の通知を表示
+        this.showCourseCompletionNotification(completionResult);
+    }
+
+    /**
+     * 現在のチャレンジを一時停止
+     */
+    pauseCurrentChallenge() {
+        // 実行中の処理があれば停止
+        if (this.elements.runButton) {
+            this.elements.runButton.disabled = true;
+        }
+        
+        // ヒントパネルを閉じる
+        this.hideHint();
+        
+        // 結果をクリア
+        this.clearResults();
+    }
+
+    /**
+     * コース完了通知を表示
+     * @param {Object} completionResult - コース完了結果
+     */
+    showCourseCompletionNotification(completionResult) {
+        // 簡単な通知バナーを表示
+        const notification = document.createElement('div');
+        notification.className = 'course-completion-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">🎉</div>
+                <div class="notification-text">
+                    <strong>${completionResult.courseTitle}</strong> を完了しました！
+                </div>
+                <button class="notification-close">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // 自動で5秒後に削除
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 5000);
+        
+        // 閉じるボタンのイベント
+        const closeBtn = notification.querySelector('.notification-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
+            });
+        }
+        
+        // 通知をクリックで詳細表示
+        notification.addEventListener('click', (e) => {
+            if (e.target !== closeBtn) {
+                if (window.courseUI && typeof window.courseUI.showCourseCompletionModal === 'function') {
+                    window.courseUI.showCourseCompletionModal(completionResult);
+                }
+            }
+        });
     }
 }
