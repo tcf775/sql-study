@@ -1,0 +1,208 @@
+[
+  {
+    "type": "slide",
+    "title": "DuckDBの特徴と利点",
+    "content": "# DuckDBの特徴と利点\n\nDuckDBは**分析処理に特化**したSQLデータベースエンジンです。\n\n## 主な特徴\n\n- **OLAP（分析処理）に最適化**\n- **カラムナー（列指向）ストレージ**\n- **ベクトル化実行エンジン**\n- **埋め込み可能**（サーバー不要）\n- **標準SQLサポート**\n\n## 従来のRDBMSとの違い\n\n| 特徴 | 従来のRDBMS | DuckDB |\n|------|-------------|--------|\n| 用途 | OLTP（トランザクション処理） | OLAP（分析処理） |\n| ストレージ | 行指向 | 列指向 |\n| 最適化 | 更新・削除 | 集計・分析 |\n\n### DuckDBが得意な処理\n\n- 大量データの集計\n- 複雑な分析クエリ\n- データウェアハウス処理\n- ETL（Extract, Transform, Load）"
+  },
+  {
+    "type": "word-reorder",
+    "id": "duckdb-001",
+    "title": "DuckDBの基本情報を確認しよう",
+    "description": "DuckDBのバージョン情報を確認してください。",
+    "difficulty": 1,
+    "hints": [
+      "PRAGMA version; を使用してバージョンを確認できます",
+      "DuckDBの基本的な動作確認です"
+    ],
+    "solution": "PRAGMA version"
+  },
+  {
+    "type": "word-reorder",
+    "id": "duckdb-002",
+    "title": "メモリ使用量を確認しよう",
+    "description": "現在のメモリ使用量を確認してください。",
+    "difficulty": 2,
+    "hints": [
+      "PRAGMA memory_limit; でメモリ制限を確認できます",
+      "PRAGMA database_size; でデータベースサイズを確認できます"
+    ],
+    "solution": "PRAGMA database_size"
+  },
+  {
+    "type": "slide",
+    "title": "CSVファイルの読み込み",
+    "content": "# CSVファイルの読み込み\n\nDuckDBは**様々なファイル形式**を直接読み込むことができます。\n\n## CSVファイルの読み込み方法\n\n```sql\n-- 直接クエリ\nSELECT * FROM 'data/file.csv';\n\n-- read_csv関数を使用\nSELECT * FROM read_csv('data/file.csv');\n\n-- オプション指定\nSELECT * FROM read_csv('data/file.csv', \n    header=true, \n    delimiter=',',\n    quote='\"'\n);\n```\n\n## 主なオプション\n\n- **header**: ヘッダー行の有無\n- **delimiter**: 区切り文字\n- **quote**: 引用符\n- **skip**: スキップする行数\n- **columns**: カラム定義\n\n### 実例\n\n```sql\nSELECT COUNT(*) FROM 'data/products.csv';\n```"
+  },
+  {
+    "type": "word-reorder",
+    "id": "etl-001",
+    "title": "CSVファイルから商品数を取得しよう",
+    "description": "data/products.csvファイルから商品の総数を取得してください。",
+    "difficulty": 2,
+    "hints": [
+      "ファイルパスを直接FROM句で指定できます",
+      "COUNT(*)で行数をカウントします",
+      "シングルクォートでファイルパスを囲みます"
+    ],
+    "solution": "SELECT COUNT(*) FROM 'data/products.csv'"
+  },
+  {
+    "type": "word-reorder",
+    "id": "etl-002",
+    "title": "CSVファイルから高額商品を抽出しよう",
+    "description": "data/products.csvファイルから価格が10000以上の商品の商品名と価格を取得してください。",
+    "difficulty": 3,
+    "hints": [
+      "WHERE句で価格の条件を指定します",
+      "CSVファイルのカラム名を正確に指定します",
+      "price >= 10000の条件を使用します"
+    ],
+    "solution": "SELECT product_name, price FROM 'data/products.csv' WHERE price >= 10000"
+  },
+  {
+    "type": "slide",
+    "title": "複数ファイルの一括処理",
+    "content": "# 複数ファイルの一括処理\n\nDuckDBは**ワイルドカード**を使用して複数ファイルを一括処理できます。\n\n## ワイルドカードパターン\n\n```sql\n-- 同じディレクトリの全CSVファイル\nSELECT * FROM 'data/*.csv';\n\n-- 特定パターンのファイル\nSELECT * FROM 'data/sales_*.csv';\n\n-- 再帰的にサブディレクトリも含める\nSELECT * FROM 'data/**/*.csv';\n```\n\n## UNION ALLとの組み合わせ\n\n```sql\nSELECT 'products' as source, * FROM 'data/products.csv'\nUNION ALL\nSELECT 'categories' as source, * FROM 'data/categories.csv';\n```\n\n### ファイル情報の取得\n\n```sql\nSELECT filename, COUNT(*) as row_count\nFROM 'data/*.csv'\nGROUP BY filename;\n```"
+  },
+  {
+    "type": "word-reorder",
+    "id": "etl-003",
+    "title": "複数CSVファイルの行数を集計しよう",
+    "description": "dataディレクトリ内の全CSVファイルについて、ファイル名と行数を表示してください。",
+    "difficulty": 4,
+    "hints": [
+      "ワイルドカード 'data/*.csv' を使用します",
+      "filename関数でファイル名を取得できます",
+      "GROUP BY filename で集計します",
+      "COUNT(*)で行数をカウントします"
+    ],
+    "solution": "SELECT filename, COUNT(*) as row_count FROM 'data/*.csv' GROUP BY filename"
+  },
+  {
+    "type": "slide",
+    "title": "高度な集計関数",
+    "content": "# 高度な集計関数\n\nDuckDBは**高度な分析関数**を豊富に提供しています。\n\n## 統計関数\n\n- **STDDEV()**: 標準偏差\n- **VARIANCE()**: 分散\n- **MEDIAN()**: 中央値\n- **MODE()**: 最頻値\n- **PERCENTILE_CONT()**: パーセンタイル\n\n## 配列集約関数\n\n- **ARRAY_AGG()**: 配列に集約\n- **STRING_AGG()**: 文字列に集約\n- **LIST()**: リストに集約\n\n### 実例\n\n```sql\nSELECT \n    AVG(price) as avg_price,\n    MEDIAN(price) as median_price,\n    STDDEV(price) as stddev_price,\n    PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY price) as p95_price\nFROM products;\n```"
+  },
+  {
+    "type": "word-reorder",
+    "id": "analytics-001",
+    "title": "商品価格の統計情報を計算しよう",
+    "description": "商品価格の平均値、中央値、標準偏差、95パーセンタイルを計算してください。",
+    "difficulty": 5,
+    "hints": [
+      "AVG()で平均値を計算します",
+      "MEDIAN()で中央値を計算します",
+      "STDDEV()で標準偏差を計算します",
+      "PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY price)で95パーセンタイルを計算します"
+    ],
+    "solution": "SELECT AVG(price) as avg_price, MEDIAN(price) as median_price, STDDEV(price) as stddev_price, PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY price) as p95_price FROM products"
+  },
+  {
+    "type": "slide",
+    "title": "ウィンドウ関数の応用",
+    "content": "# ウィンドウ関数の応用\n\nDuckDBは**高度なウィンドウ関数**をサポートしています。\n\n## 移動平均・累積計算\n\n```sql\n-- 移動平均（3行）\nSELECT price,\n       AVG(price) OVER (ORDER BY price ROWS 2 PRECEDING) as moving_avg\nFROM products;\n\n-- 累積合計\nSELECT price,\n       SUM(price) OVER (ORDER BY price) as cumulative_sum\nFROM products;\n```\n\n## LAG/LEAD関数\n\n```sql\n-- 前の行の値\nSELECT price,\n       LAG(price, 1) OVER (ORDER BY price) as prev_price,\n       price - LAG(price, 1) OVER (ORDER BY price) as price_diff\nFROM products;\n```\n\n## NTILE関数\n\n```sql\n-- データを4分割\nSELECT product_name, price,\n       NTILE(4) OVER (ORDER BY price) as quartile\nFROM products;\n```"
+  },
+  {
+    "type": "word-reorder",
+    "id": "analytics-002",
+    "title": "商品を価格帯で4分割しよう",
+    "description": "商品を価格順に4つのグループ（四分位）に分割し、商品名、価格、四分位を表示してください。",
+    "difficulty": 6,
+    "hints": [
+      "NTILE(4)関数を使用します",
+      "OVER (ORDER BY price)で価格順に並べます",
+      "四分位は1から4の値になります"
+    ],
+    "solution": "SELECT product_name, price, NTILE(4) OVER (ORDER BY price) as quartile FROM products"
+  },
+  {
+    "type": "word-reorder",
+    "id": "analytics-003",
+    "title": "価格の移動平均を計算しよう",
+    "description": "商品を価格順に並べて、各商品の価格と直前2商品を含む3商品の移動平均を計算してください。",
+    "difficulty": 7,
+    "hints": [
+      "AVG()ウィンドウ関数を使用します",
+      "ROWS 2 PRECEDINGで直前2行を含む範囲を指定します",
+      "ORDER BY priceで価格順に並べます"
+    ],
+    "solution": "SELECT product_name, price, AVG(price) OVER (ORDER BY price ROWS 2 PRECEDING) as moving_avg FROM products"
+  },
+  {
+    "type": "slide",
+    "title": "パフォーマンス最適化",
+    "content": "# パフォーマンス最適化\n\nDuckDBで**大規模データを効率的に処理**するための技術です。\n\n## クエリ最適化のポイント\n\n1. **列の選択**: 必要なカラムのみ選択\n2. **早期フィルタリング**: WHERE句を効果的に使用\n3. **適切なJOIN順序**: 小さなテーブルから結合\n4. **インデックス活用**: 頻繁に検索するカラムにインデックス\n\n## EXPLAIN文でクエリプランを確認\n\n```sql\nEXPLAIN SELECT * FROM products WHERE price > 10000;\n```\n\n## メモリ設定の調整\n\n```sql\nPRAGMA memory_limit='4GB';\nPRAGMA threads=4;\n```\n\n### パーティション化\n\n```sql\n-- 年月でパーティション化\nCREATE TABLE sales_partitioned AS \nSELECT *, \n       YEAR(order_date) as year,\n       MONTH(order_date) as month\nFROM sales;\n```"
+  },
+  {
+    "type": "word-reorder",
+    "id": "performance-001",
+    "title": "クエリの実行計画を確認しよう",
+    "description": "価格が10000以上の商品を検索するクエリの実行計画を確認してください。",
+    "difficulty": 4,
+    "hints": [
+      "EXPLAIN文を使用します",
+      "SELECT文の前にEXPLAINを付けます",
+      "実行計画でパフォーマンスを分析できます"
+    ],
+    "solution": "EXPLAIN SELECT * FROM products WHERE price >= 10000"
+  },
+  {
+    "type": "word-reorder",
+    "id": "performance-002",
+    "title": "メモリ制限を設定しよう",
+    "description": "DuckDBのメモリ制限を2GBに設定してください。",
+    "difficulty": 3,
+    "hints": [
+      "PRAGMA memory_limit文を使用します",
+      "メモリサイズは文字列で指定します",
+      "'2GB'のように単位を含めて指定します"
+    ],
+    "solution": "PRAGMA memory_limit='2GB'"
+  },
+  {
+    "type": "slide",
+    "title": "ETLパイプライン設計",
+    "content": "# ETLパイプライン設計\n\n**Extract, Transform, Load**の一連の処理を効率的に実行します。\n\n## ETLの基本フロー\n\n1. **Extract（抽出）**: データソースからデータを取得\n2. **Transform（変換）**: データの加工・クレンジング\n3. **Load（読み込み）**: 変換後のデータを保存\n\n## DuckDBでのETL実装\n\n```sql\n-- Extract: CSVファイルから読み込み\nCREATE TABLE raw_data AS \nSELECT * FROM 'data/raw_sales.csv';\n\n-- Transform: データクレンジング\nCREATE TABLE clean_data AS\nSELECT \n    UPPER(TRIM(customer_name)) as customer_name,\n    CAST(order_date as DATE) as order_date,\n    CAST(amount as DECIMAL(10,2)) as amount\nFROM raw_data\nWHERE amount > 0 AND customer_name IS NOT NULL;\n\n-- Load: 最終テーブルに挿入\nINSERT INTO sales_summary \nSELECT customer_name, SUM(amount) as total_amount\nFROM clean_data\nGROUP BY customer_name;\n```"
+  },
+  {
+    "type": "word-reorder",
+    "id": "pipeline-001",
+    "title": "データクレンジングを実行しよう",
+    "description": "顧客名を大文字に変換し、空白を除去し、金額を小数点2桁の数値に変換してください。元データはraw_salesテーブルから取得してください。",
+    "difficulty": 6,
+    "hints": [
+      "UPPER()で大文字に変換します",
+      "TRIM()で空白を除去します",
+      "CAST(amount as DECIMAL(10,2))で数値型に変換します",
+      "WHERE句でNULLや無効なデータを除外します"
+    ],
+    "solution": "SELECT UPPER(TRIM(customer_name)) as customer_name, CAST(order_date as DATE) as order_date, CAST(amount as DECIMAL(10,2)) as amount FROM raw_sales WHERE amount > 0 AND customer_name IS NOT NULL"
+  },
+  {
+    "type": "word-reorder",
+    "id": "pipeline-002",
+    "title": "集計データを作成しよう",
+    "description": "クレンジング済みデータから顧客別の総購入金額を集計し、購入金額の多い順に並べてください。",
+    "difficulty": 5,
+    "hints": [
+      "GROUP BY customer_nameで顧客別に集計します",
+      "SUM(amount)で総購入金額を計算します",
+      "ORDER BY total_amount DESCで降順に並べます"
+    ],
+    "solution": "SELECT customer_name, SUM(amount) as total_amount FROM clean_sales GROUP BY customer_name ORDER BY total_amount DESC"
+  },
+  {
+    "type": "word-reorder",
+    "id": "pipeline-003",
+    "title": "月次売上レポートを作成しよう",
+    "description": "注文データから月別の売上合計を計算し、年月と売上金額を表示してください。2023年のデータのみを対象としてください。",
+    "difficulty": 7,
+    "hints": [
+      "YEAR()とMONTH()関数で年月を抽出します",
+      "SUM()で売上を合計します",
+      "WHERE YEAR(order_date) = 2023で2023年に限定します",
+      "GROUP BY年月で集計します"
+    ],
+    "solution": "SELECT YEAR(order_date) as year, MONTH(order_date) as month, SUM(amount) as monthly_sales FROM orders WHERE YEAR(order_date) = 2023 GROUP BY YEAR(order_date), MONTH(order_date) ORDER BY year, month"
+  }
+]

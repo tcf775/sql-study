@@ -1,0 +1,1507 @@
+/* ===== コースシステム専用CSS ===== */
+
+/* ===== コース選択画面 ===== */
+
+.course-selection-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow-y: auto;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.course-selection-screen.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.course-selection-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.course-selection-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+    animation: slideInDown 0.6s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.course-selection-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-weight: 700;
+}
+
+.course-selection-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.course-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    animation: slideInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.course-card:nth-child(1) { animation-delay: 0.1s; }
+.course-card:nth-child(2) { animation-delay: 0.2s; }
+.course-card:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+.course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.course-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-icon {
+    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.course-title-section h3 {
+    font-size: 1.5rem;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.course-difficulty {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.course-difficulty.beginner {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.course-difficulty.intermediate {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.course-difficulty.advanced {
+    background: #bee3f8;
+    color: #2a4365;
+}
+
+.course-description {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.course-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.course-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.course-meta-icon {
+    font-size: 1.1rem;
+}
+
+.course-progress {
+    margin-bottom: 1.5rem;
+}
+
+.course-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.course-progress-label {
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 600;
+}
+
+.course-progress-percentage {
+    font-size: 0.8rem;
+    color: #718096;
+    font-weight: 600;
+}
+
+.course-progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.course-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #38a169);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.course-modules {
+    margin-bottom: 1.5rem;
+}
+
+.course-modules-header {
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.course-modules-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.course-module-tag {
+    padding: 0.25rem 0.75rem;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    color: #4a5568;
+    transition: all 0.2s ease;
+}
+
+.course-module-tag.completed {
+    background: #c6f6d5;
+    border-color: #9ae6b4;
+    color: #22543d;
+    font-weight: 600;
+}
+
+.course-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.course-select-btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.course-select-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.course-select-btn.continue {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+}
+
+.course-select-btn.continue:hover {
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+}
+
+.course-info-btn {
+    padding: 0.75rem;
+    background: transparent;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+.course-info-btn:hover {
+    border-color: #cbd5e0;
+    color: #4a5568;
+    background: #f7fafc;
+}
+
+/* ===== コース情報モーダル ===== */
+
+.course-info-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 2rem;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.course-info-modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.course-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.course-info-header h2 {
+    color: #2d3748;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.course-info-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #718096;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.course-info-close:hover {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.course-info-body {
+    padding: 2rem;
+}
+
+.course-overview {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #667eea;
+}
+
+.course-overview p {
+    margin: 0.5rem 0;
+    color: #4a5568;
+}
+
+.course-overview p:first-child {
+    margin-top: 0;
+}
+
+.course-overview p:last-child {
+    margin-bottom: 0;
+}
+
+.course-description-full {
+    margin-bottom: 2rem;
+}
+
+.course-description-full h3 {
+    color: #2d3748;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.course-modules-detail h3 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.module-detail {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.module-detail:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.module-detail.completed {
+    background: #f0fff4;
+    border-color: #9ae6b4;
+}
+
+.module-detail h4 {
+    color: #2d3748;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.module-detail p {
+    color: #4a5568;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+.module-progress {
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.module-prerequisites {
+    font-size: 0.8rem;
+    color: #e53e3e;
+    font-style: italic;
+}
+
+.course-info-actions {
+    padding: 1rem 2rem 2rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.course-info-actions .course-select-btn {
+    min-width: 200px;
+}
+
+/* ===== 進捗表示パネル ===== */
+
+.progress-panel {
+    width: 320px;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    position: fixed;
+    right: 0;
+    top: 80px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.progress-panel.hidden {
+    transform: translateX(100%);
+}
+
+.progress-panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f7fafc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.progress-panel-header h3 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1rem;
+}
+
+.progress-panel-content {
+    padding: 1rem;
+}
+
+/* コース全体の進捗セクション */
+.course-progress-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.course-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.course-progress-header h4 {
+    margin: 0;
+    color: #2d3748;
+    font-size: 1rem;
+}
+
+.course-progress-stats {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 0.5rem;
+}
+
+/* モジュール進捗セクション */
+.modules-progress-section {
+    margin-bottom: 2rem;
+}
+
+.modules-progress-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.module-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.module-item:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.module-item.completed {
+    background: #f0fff4;
+    border-color: #9ae6b4;
+}
+
+.module-item.current {
+    background: #ebf8ff;
+    border-color: #90cdf4;
+}
+
+.module-header {
+    margin-bottom: 0.75rem;
+}
+
+.module-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 0.9rem;
+}
+
+.module-status {
+    font-size: 1rem;
+}
+
+.module-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.module-progress-text {
+    font-size: 0.8rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.module-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.module-progress-bar .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #38a169);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.module-lessons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.lesson-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.lesson-dot:hover {
+    transform: scale(1.2);
+}
+
+.lesson-dot.completed {
+    background: #48bb78;
+}
+
+.lesson-dot.current {
+    background: #667eea;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(102, 126, 234, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+    }
+}
+
+/* 現在のレッスンセクション */
+.current-lesson-section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #ebf8ff;
+    border-radius: 8px;
+    border-left: 4px solid #3182ce;
+}
+
+.current-lesson-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.current-lesson-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lesson-position {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #2d3748;
+    font-weight: 500;
+}
+
+.lesson-separator {
+    color: #718096;
+}
+
+.lesson-navigation {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.lesson-nav-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lesson-nav-btn:hover:not(:disabled) {
+    background: #2c5aa0;
+    transform: translateY(-1px);
+}
+
+.lesson-nav-btn:disabled {
+    background: #cbd5e0;
+    color: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 学習統計セクション */
+.learning-stats-section {
+    padding: 1rem;
+    background: #fffaf0;
+    border-radius: 8px;
+    border-left: 4px solid #ed8936;
+}
+
+.learning-stats-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #718096;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* ヘッダーの進捗ボタン */
+.show-progress-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    color: #4a5568;
+}
+
+.show-progress-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+    .progress-panel {
+        width: 280px;
+    }
+    
+    .course-list {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .course-selection-screen {
+        padding: 1rem;
+    }
+    
+    .course-selection-header h2 {
+        font-size: 2rem;
+    }
+    
+    .course-selection-header p {
+        font-size: 1rem;
+    }
+    
+    .course-list {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        padding: 1.5rem;
+    }
+    
+    .course-meta {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .course-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .progress-panel {
+        position: fixed;
+        top: 80px;
+        right: 0;
+        width: 100%;
+        max-width: 320px;
+        transform: translateX(100%);
+        z-index: 1001;
+    }
+    
+    .progress-panel:not(.hidden) {
+        transform: translateX(0);
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-selection-header h2 {
+        font-size: 1.75rem;
+    }
+    
+    .course-card {
+        padding: 1.25rem;
+    }
+    
+    .course-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .course-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .course-info-overlay {
+        padding: 1rem;
+    }
+    
+    .course-info-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .course-info-body {
+        padding: 1.5rem;
+    }
+    
+    .course-info-actions {
+        padding: 1rem 1.5rem 1.5rem;
+    }
+    
+    .module-detail {
+        padding: 1rem;
+    }
+    
+    .progress-panel {
+        max-width: 100%;
+    }
+}
+
+/* ダークモード対応（将来の拡張用） */
+@media (prefers-color-scheme: dark) {
+    .course-card {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .course-title-section h3 {
+        color: #e2e8f0;
+    }
+    
+    .course-description {
+        color: #a0aec0;
+    }
+    
+    .progress-panel {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .progress-panel-header {
+        background: #4a5568;
+    }
+    
+    .course-progress-section,
+    .current-lesson-section,
+    .learning-stats-section {
+        background: #4a5568;
+    }
+    
+    .module-item {
+        background: #4a5568;
+        border-color: #718096;
+    }
+}
+
+/* アニメーション効果の改善 */
+.course-card {
+    will-change: transform;
+}
+
+.lesson-dot {
+    will-change: transform;
+}
+
+.progress-fill {
+    will-change: width;
+}
+
+/* アクセシビリティ対応 */
+@media (prefers-reduced-motion: reduce) {
+    .course-card,
+    .lesson-dot,
+    .progress-fill,
+    .course-selection-screen,
+    .course-info-modal {
+        animation: none;
+        transition: none;
+    }
+    
+    .lesson-dot.current {
+        animation: none;
+    }
+}
+
+/* フォーカス状態の改善 */
+.course-select-btn:focus,
+.course-info-btn:focus,
+.lesson-nav-btn:focus,
+.lesson-dot:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* 高コントラスト対応 */
+@media (prefers-contrast: high) {
+    .course-card {
+        border: 2px solid #2d3748;
+    }
+    
+    .course-difficulty {
+        border: 1px solid currentColor;
+    }
+    
+    .lesson-dot {
+        border: 1px solid #2d3748;
+    }
+}
+/
+* ===== 追加のレスポンシブ改善 ===== */
+
+/* 超小型デバイス対応 (320px以下) */
+@media (max-width: 320px) {
+    .course-selection-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .course-card {
+        padding: 1rem;
+    }
+    
+    .course-icon {
+        font-size: 1.8rem;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .course-title-section h3 {
+        font-size: 1.2rem;
+    }
+    
+    .course-meta {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .progress-panel {
+        width: 100%;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* タッチデバイス対応 */
+@media (hover: none) and (pointer: coarse) {
+    .course-card:hover {
+        transform: none;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .course-select-btn:hover,
+    .course-info-btn:hover,
+    .lesson-nav-btn:hover {
+        transform: none;
+    }
+    
+    .lesson-dot {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .lesson-nav-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* 横向きモバイル対応 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .course-selection-screen {
+        padding: 1rem;
+    }
+    
+    .course-selection-header {
+        margin-bottom: 2rem;
+    }
+    
+    .course-selection-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .progress-panel {
+        width: 280px;
+    }
+}
+
+/* 大型デスクトップ対応 */
+@media (min-width: 1440px) {
+    .course-selection-container {
+        max-width: 1400px;
+    }
+    
+    .course-list {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2.5rem;
+    }
+    
+    .progress-panel {
+        width: 360px;
+    }
+}
+
+/* プリント対応 */
+@media print {
+    .course-selection-screen,
+    .progress-panel {
+        display: none !important;
+    }
+}
+
+/* 高解像度ディスプレイ対応 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .course-icon {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* ===== パフォーマンス最適化 ===== */
+
+/* GPU加速を有効にする要素 */
+.course-card,
+.progress-panel,
+.course-selection-screen {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* アニメーション最適化 */
+.course-card {
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* スクロール最適化 */
+.progress-panel-content,
+.course-info-modal {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* ===== アクセシビリティ強化 ===== */
+
+/* スクリーンリーダー対応 */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* キーボードナビゲーション改善 */
+.course-card:focus,
+.lesson-dot:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+    .course-card {
+        border: 2px solid #000;
+    }
+    
+    .course-progress-fill,
+    .progress-fill {
+        background: #000;
+    }
+    
+    .lesson-dot.completed {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .lesson-dot.current {
+        background: #000;
+        border: 2px solid #fff;
+        animation: none;
+    }
+}
+
+/* ===== ダークモード完全対応 ===== */
+@media (prefers-color-scheme: dark) {
+    .course-selection-screen {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    }
+    
+    .course-card {
+        background: #2d3748;
+        color: #e2e8f0;
+        border: 1px solid #4a5568;
+    }
+    
+    .course-title-section h3 {
+        color: #e2e8f0;
+    }
+    
+    .course-description {
+        color: #a0aec0;
+    }
+    
+    .course-meta-item {
+        color: #a0aec0;
+    }
+    
+    .course-module-tag {
+        background: #4a5568;
+        color: #e2e8f0;
+        border-color: #718096;
+    }
+    
+    .course-module-tag.completed {
+        background: #22543d;
+        color: #c6f6d5;
+        border-color: #38a169;
+    }
+    
+    .progress-panel {
+        background: #2d3748;
+        color: #e2e8f0;
+        border-left: 1px solid #4a5568;
+    }
+    
+    .progress-panel-header {
+        background: #4a5568;
+        border-bottom-color: #718096;
+    }
+    
+    .course-progress-section,
+    .current-lesson-section,
+    .learning-stats-section {
+        background: #4a5568;
+        border-left-color: #667eea;
+    }
+    
+    .module-item {
+        background: #4a5568;
+        border-color: #718096;
+        color: #e2e8f0;
+    }
+    
+    .module-item.completed {
+        background: #22543d;
+        border-color: #38a169;
+    }
+    
+    .module-item.current {
+        background: #2c5aa0;
+        border-color: #4299e1;
+    }
+    
+    .lesson-dot {
+        background: #718096;
+    }
+    
+    .lesson-dot.completed {
+        background: #48bb78;
+    }
+    
+    .lesson-dot.current {
+        background: #667eea;
+    }
+    
+    .course-info-modal {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .course-info-header {
+        border-bottom-color: #4a5568;
+    }
+    
+    .course-overview {
+        background: #4a5568;
+        border-left-color: #667eea;
+    }
+    
+    .module-detail {
+        background: #4a5568;
+        border-color: #718096;
+    }
+    
+    .module-detail.completed {
+        background: #22543d;
+        border-color: #38a169;
+    }
+}/* ===
+== 準備中コース対応スタイル ===== */
+
+/* 準備中コースカード */
+.course-card.coming-soon {
+    opacity: 0.7;
+    position: relative;
+    overflow: hidden;
+}
+
+.course-card.coming-soon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 193, 7, 0.1) 10px,
+        rgba(255, 193, 7, 0.1) 20px
+    );
+    pointer-events: none;
+}
+
+.course-card.coming-soon:hover {
+    transform: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* 準備中バッジ */
+.coming-soon-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #ffc107, #ff8f00);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.5rem;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+    animation: comingSoonPulse 2s ease-in-out infinite;
+}
+
+@keyframes comingSoonPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(255, 193, 7, 0.5);
+    }
+}
+
+/* 準備中ボタン */
+.course-select-btn.disabled {
+    background: #6c757d;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.course-select-btn.disabled:hover {
+    transform: none;
+    box-shadow: none;
+    background: #6c757d;
+}
+
+/* 準備中コースの説明文強調 */
+.course-card.coming-soon .course-description strong {
+    color: #ff8f00;
+    font-weight: 700;
+}
+
+/* 準備中コースのモジュールタグ */
+.course-card.coming-soon .course-module-tag {
+    opacity: 0.6;
+    background: #f8f9fa;
+    color: #6c757d;
+    border-color: #dee2e6;
+}
+
+/* 準備中コースのメタ情報 */
+.course-card.coming-soon .course-meta-item {
+    opacity: 0.7;
+}
+
+/* 準備中コースのアイコン */
+.course-card.coming-soon .course-icon {
+    position: relative;
+}
+
+.course-card.coming-soon .course-icon::after {
+    content: '🚧';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 1rem;
+    background: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 準備中コースの情報モーダル対応 */
+.course-info-modal .course-card.coming-soon .course-overview {
+    border-left-color: #ffc107;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .coming-soon-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.6rem;
+        margin-left: 0.25rem;
+    }
+    
+    .course-card.coming-soon .course-icon::after {
+        font-size: 0.8rem;
+        width: 16px;
+        height: 16px;
+        top: -3px;
+        right: -3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-card.coming-soon::after {
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 8px,
+            rgba(255, 193, 7, 0.1) 8px,
+            rgba(255, 193, 7, 0.1) 16px
+        );
+    }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .course-card.coming-soon {
+        background: #2d3748;
+        border: 1px solid #4a5568;
+    }
+    
+    .course-card.coming-soon::after {
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(255, 193, 7, 0.2) 10px,
+            rgba(255, 193, 7, 0.2) 20px
+        );
+    }
+    
+    .coming-soon-badge {
+        background: linear-gradient(135deg, #d69e2e, #b7791f);
+    }
+    
+    .course-select-btn.disabled {
+        background: #4a5568;
+        color: #a0aec0;
+    }
+    
+    .course-card.coming-soon .course-description strong {
+        color: #d69e2e;
+    }
+}
+
+/* アクセシビリティ対応 */
+@media (prefers-reduced-motion: reduce) {
+    .coming-soon-badge {
+        animation: none;
+    }
+    
+    .course-card.coming-soon::after {
+        background: rgba(255, 193, 7, 0.1);
+    }
+}
+
+/* 高コントラスト対応 */
+@media (prefers-contrast: high) {
+    .course-card.coming-soon {
+        border: 3px solid #ffc107;
+    }
+    
+    .coming-soon-badge {
+        background: #000;
+        color: #fff;
+        border: 2px solid #ffc107;
+    }
+    
+    .course-select-btn.disabled {
+        background: #000;
+        color: #fff;
+        border: 2px solid #6c757d;
+    }
+}
