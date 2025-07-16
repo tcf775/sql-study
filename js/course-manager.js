@@ -69,45 +69,85 @@ class CourseManager {
     }
 
     /**
-     * 各コースのチャレンジデータを読み込み
+     * 各コースのチャレンジデータを読み込み（遅延読み込み対応）
      */
     async loadChallengeData() {
+        // 遅延読み込み: 現在選択されているコースのみ読み込み
+        const selectedCourseId = this.progressManager?.getSelectedCourse();
+        
         const challengeFiles = {
             'sql-basics': 'slides/challenges.json',
             'db-fundamentals': 'slides/db-fundamentals-challenges.json',
             'big-data-basics': 'slides/big-data-basics-challenges.json'
         };
 
-        for (const [courseId, filePath] of Object.entries(challengeFiles)) {
-            try {
-                const response = await fetch(filePath);
-                if (response.ok) {
-                    this.challengeData[courseId] = await response.json();
-                } else {
-                    console.warn(`チャレンジファイルが見つかりません: ${filePath}`);
-                    this.challengeData[courseId] = [];
-                }
-            } catch (error) {
-                console.error(`チャレンジデータ読み込みエラー (${courseId}):`, error);
+        // 選択されたコースがある場合は、そのコースのみ読み込み
+        if (selectedCourseId && challengeFiles[selectedCourseId]) {
+            await this.loadCourseChallenge(selectedCourseId, challengeFiles[selectedCourseId]);
+        } else {
+            // 初回アクセス時は基本コースのみ読み込み
+            await this.loadCourseChallenge('sql-basics', challengeFiles['sql-basics']);
+        }
+    }
+
+    /**
+     * 特定コースのチャレンジデータを読み込み
+     */
+    async loadCourseChallenge(courseId, filePath) {
+        // 既に読み込み済みの場合はスキップ
+        if (this.challengeData[courseId]) {
+            return this.challengeData[courseId];
+        }
+
+        try {
+            const response = await fetch(filePath);
+            if (response.ok) {
+                this.challengeData[courseId] = await response.json();
+                console.log(`チャレンジデータを読み込みました: ${courseId}`);
+            } else {
+                console.warn(`チャレンジファイルが見つかりません: ${filePath}`);
+                this.challengeData[courseId] = [];
+            }
+        } catch (error) {
+            console.error(`チャレンジデータ読み込みエラー (${courseId}):`, error);
+            
+            // ErrorHandlerを使用してチャレンジデータエラーを処理
+            if (window.errorHandler) {
+                const result = await window.errorHandler.handleError('CHALLENGE_LOAD_ERROR', error, {
+                    courseId: courseId,
+                    challengeFile: filePath,
+                    operation: 'loadCourseChallenge'
+                });
                 
-                // ErrorHandlerを使用してチャレンジデータエラーを処理
-                if (window.errorHandler) {
-                    const result = await window.errorHandler.handleError('CHALLENGE_LOAD_ERROR', error, {
-                        courseId: courseId,
-                        challengeFile: filePath,
-                        operation: 'loadChallengeData'
-                    });
-                    
-                    if (result.success) {
-                        this.challengeData[courseId] = result.data;
-                    } else {
-                        this.challengeData[courseId] = [];
-                    }
+                if (result.success) {
+                    this.challengeData[courseId] = result.data;
                 } else {
                     this.challengeData[courseId] = [];
                 }
+            } else {
+                this.challengeData[courseId] = [];
             }
         }
+
+        return this.challengeData[courseId];
+    }
+
+    /**
+     * 必要に応じてコースのチャレンジデータを遅延読み込み
+     */
+    async ensureCourseDataLoaded(courseId) {
+        if (!this.challengeData[courseId]) {
+            const challengeFiles = {
+                'sql-basics': 'slides/challenges.json',
+                'db-fundamentals': 'slides/db-fundamentals-challenges.json',
+                'big-data-basics': 'slides/big-data-basics-challenges.json'
+            };
+
+            if (challengeFiles[courseId]) {
+                await this.loadCourseChallenge(courseId, challengeFiles[courseId]);
+            }
+        }
+        return this.challengeData[courseId] || [];
     }
 
     /**
@@ -169,11 +209,14 @@ class CourseManager {
     /**
      * コースを選択
      */
-    selectCourse(courseId) {
+    async selectCourse(courseId) {
         const course = this.getCourse(courseId);
         if (!course) {
             throw new Error(`コースが見つかりません: ${courseId}`);
         }
+        
+        // コースのチャレンジデータを遅延読み込み
+        await this.ensureCourseDataLoaded(courseId);
         
         this.currentCourse = course;
         this.progressManager.saveSelectedCourse(courseId);

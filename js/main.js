@@ -10,6 +10,8 @@ import { ErrorHandler } from './error-handler.js';
 import { NotificationSystem } from './notification-system.js';
 import { AdaptiveLearning } from './adaptive-learning.js';
 import { AdaptiveLearningUI } from './adaptive-learning-ui.js';
+import { UIOptimizer } from './ui-optimizer.js';
+import { PerformanceMonitor } from './performance-monitor.js';
 
 
 // グローバル変数
@@ -21,6 +23,8 @@ let courseUI;
 let progressUI;
 let adaptiveLearning;
 let adaptiveLearningUI;
+let uiOptimizer;
+let performanceMonitor;
 
 // アプリケーション初期化
 async function initializeApp() {
@@ -66,11 +70,20 @@ async function initializeApp() {
         // 既存のチャレンジ読み込み（フォールバック用）
         await gameEngine.loadChallenges();
 
+        // UIOptimizer初期化
+        uiOptimizer = new UIOptimizer();
+        uiOptimizer.initialize();
+        
+        // PerformanceMonitor初期化
+        performanceMonitor = new PerformanceMonitor();
+        
         // グローバルアクセス用
         window.dbManager = dbManager;
         window.gameEngine = gameEngine;
         window.courseManager = courseManager;
         window.adaptiveLearning = adaptiveLearning;
+        window.uiOptimizer = uiOptimizer;
+        window.performanceMonitor = performanceMonitor;
         
         // UIコントローラー初期化
         const autoComplete = new SQLAutoComplete();

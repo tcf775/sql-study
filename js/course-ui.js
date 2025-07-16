@@ -11,7 +11,26 @@ export class CourseUI {
             courseList: document.getElementById('course-list'),
             appLayout: document.querySelector('.app-layout')
         };
+        
+        // UIOptimizerを初期化
+        this.uiOptimizer = null;
+        this.initializeUIOptimizer();
+        
         this.bindEvents();
+    }
+
+    /**
+     * UIOptimizerを初期化
+     */
+    async initializeUIOptimizer() {
+        try {
+            const { UIOptimizer } = await import('./ui-optimizer.js');
+            this.uiOptimizer = new UIOptimizer();
+            this.uiOptimizer.initialize();
+            console.log('CourseUI: UIOptimizerが初期化されました');
+        } catch (error) {
+            console.warn('UIOptimizerの読み込みに失敗しました:', error);
+        }
     }
 
     /**
@@ -47,7 +66,7 @@ export class CourseUI {
     }
 
     /**
-     * コース一覧を描画
+     * コース一覧を描画（最適化版）
      */
     renderCourseList(courses) {
         if (!courses || courses.length === 0) {
@@ -55,11 +74,20 @@ export class CourseUI {
             return;
         }
 
-        const courseCards = courses.map(course => this.createCourseCard(course)).join('');
-        this.elements.courseList.innerHTML = courseCards;
-
-        // コース選択ボタンのイベントリスナーを設定
-        this.bindCourseSelectionEvents();
+        // UIOptimizerが利用可能な場合は最適化された更新を使用
+        if (this.uiOptimizer) {
+            this.uiOptimizer.updateCourseSelection(courses, 'high');
+            
+            // イベントリスナーを遅延設定
+            setTimeout(() => {
+                this.bindCourseSelectionEvents();
+            }, 50);
+        } else {
+            // フォールバック: 従来の方法
+            const courseCards = courses.map(course => this.createCourseCard(course)).join('');
+            this.elements.courseList.innerHTML = courseCards;
+            this.bindCourseSelectionEvents();
+        }
     }
 
     /**
@@ -185,21 +213,25 @@ export class CourseUI {
     }
 
     /**
-     * コースを選択して学習を開始
+     * コースを選択して学習を開始（最適化版）
      */
     async selectCourse(courseId) {
         try {
+            // ローディング状態を表示
+            this.showCourseLoadingState(courseId);
+            
             // コースを取得
             const course = this.courseManager.getCourse(courseId);
             
             // 準備中のコースかチェック
             if (course.status === 'coming_soon') {
                 alert('このコースは現在準備中です。近日公開予定です。');
+                this.hideCourseLoadingState();
                 return;
             }
             
-            // コースを選択
-            const selectedCourse = this.courseManager.selectCourse(courseId);
+            // コースを選択（遅延読み込み対応）
+            const selectedCourse = await this.courseManager.selectCourse(courseId);
             console.log(`コースを選択しました: ${selectedCourse.title}`);
 
             // GameEngineにコースを設定
@@ -220,15 +252,50 @@ export class CourseUI {
                 window.progressUI.onCourseSelected(course);
             }
 
-            // チャレンジを更新
+            // チャレンジを更新（非同期で実行）
             if (window.uiController && typeof window.uiController.updateChallenge === 'function') {
-                window.uiController.updateChallenge();
+                // UI更新を次のフレームで実行
+                requestAnimationFrame(() => {
+                    window.uiController.updateChallenge();
+                });
             }
+
+            this.hideCourseLoadingState();
 
         } catch (error) {
             console.error('コース選択エラー:', error);
+            this.hideCourseLoadingState();
             alert(`コース選択に失敗しました: ${error.message}`);
         }
+    }
+
+    /**
+     * コース読み込み状態を表示
+     */
+    showCourseLoadingState(courseId) {
+        const courseCard = document.querySelector(`[data-course-id="${courseId}"]`);
+        if (courseCard) {
+            const selectBtn = courseCard.querySelector('.course-select-btn');
+            if (selectBtn) {
+                selectBtn.disabled = true;
+                selectBtn.textContent = '読み込み中...';
+            }
+        }
+    }
+
+    /**
+     * コース読み込み状態を非表示
+     */
+    hideCourseLoadingState() {
+        const selectBtns = document.querySelectorAll('.course-select-btn');
+        selectBtns.forEach(btn => {
+            btn.disabled = false;
+            const courseId = btn.dataset.courseId;
+            const course = this.courseManager.getCourse(courseId);
+            const progress = this.courseManager.getCourseProgress(courseId);
+            const isStarted = progress && progress.completedLessons.length > 0;
+            btn.textContent = isStarted ? '続きから学習' : 'コースを開始';
+        });
     }
 
     /**

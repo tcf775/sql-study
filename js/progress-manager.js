@@ -301,19 +301,69 @@ class ProgressManager {
     }
 
     /**
-     * 進捗データをlocalStorageに保存
+     * 進捗データをlocalStorageに保存（効率的な更新処理）
      */
     saveProgressData() {
+        // デバウンス処理: 短時間での連続保存を防ぐ
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+        
+        this.saveTimeout = setTimeout(() => {
+            this.performSave();
+        }, 100); // 100ms後に保存実行
+    }
+
+    /**
+     * 実際の保存処理を実行
+     */
+    performSave() {
         try {
             const dataToSave = {
                 courseProgress: this.progressData,
                 lastSaved: new Date().toISOString(),
                 version: '1.0'
             };
+            
+            // データサイズをチェック
+            const dataString = JSON.stringify(dataToSave);
+            const dataSize = new Blob([dataString]).size;
+            
+            // 大きすぎる場合は古いデータをクリーンアップ
+            if (dataSize > 500000) { // 500KB以上の場合
+                this.cleanupProgressData();
+                dataToSave.courseProgress = this.progressData;
+            }
+            
             localStorage.setItem(this.storageKey, JSON.stringify(dataToSave));
+            console.log(`進捗データを保存しました (${Math.round(dataSize / 1024)}KB)`);
         } catch (error) {
             console.error('進捗データ保存エラー:', error);
             this.handleSaveError(error);
+        }
+    }
+
+    /**
+     * 進捗データのクリーンアップ（古いデータを削除）
+     */
+    cleanupProgressData() {
+        const cutoffDate = new Date();
+        cutoffDate.setMonth(cutoffDate.getMonth() - 6); // 6ヶ月前
+        
+        let cleanedCount = 0;
+        for (const [courseId, progress] of Object.entries(this.progressData)) {
+            if (progress.lastAccessed) {
+                const lastAccessed = new Date(progress.lastAccessed);
+                if (lastAccessed < cutoffDate && !progress.isCompleted) {
+                    // 6ヶ月以上アクセスがなく、未完了のコースデータを削除
+                    delete this.progressData[courseId];
+                    cleanedCount++;
+                }
+            }
+        }
+        
+        if (cleanedCount > 0) {
+            console.log(`古い進捗データを${cleanedCount}件クリーンアップしました`);
         }
     }
 
