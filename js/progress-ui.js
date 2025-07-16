@@ -10,6 +10,11 @@ export class ProgressUI {
         this.currentCourse = null;
         this.currentProgress = null;
         
+        // UIOptimizer初期化
+        this.uiOptimizer = null;
+        this.lastUpdateData = null; // 前回の更新データをキャッシュ
+        this.initializeUIOptimizer();
+        
         this.elements = {
             progressPanel: document.getElementById('progress-panel'),
             toggleButton: document.getElementById('toggle-progress-panel'),
@@ -38,6 +43,29 @@ export class ProgressUI {
         };
         
         this.bindEvents();
+    }
+
+    /**
+     * UIOptimizerを初期化
+     */
+    async initializeUIOptimizer() {
+        try {
+            const { UIOptimizer } = await import('./ui-optimizer.js');
+            this.uiOptimizer = new UIOptimizer();
+            this.uiOptimizer.initialize();
+            
+            // 進捗UI用の要素をキャッシュ
+            this.uiOptimizer.cacheElement('progress-panel', '#progress-panel');
+            this.uiOptimizer.cacheElement('course-progress-fill', '#course-progress-fill');
+            this.uiOptimizer.cacheElement('course-progress-percentage', '#course-progress-percentage');
+            this.uiOptimizer.cacheElement('modules-list', '#modules-list');
+            this.uiOptimizer.cacheElement('completed-lessons-count', '#completed-lessons-count');
+            this.uiOptimizer.cacheElement('total-lessons-count', '#total-lessons-count');
+            
+            console.log('ProgressUI: UIOptimizerが初期化されました');
+        } catch (error) {
+            console.warn('ProgressUI: UIOptimizerの読み込みに失敗しました:', error);
+        }
     }
 
     /**
@@ -140,16 +168,11 @@ export class ProgressUI {
     }
 
     /**
-     * コース全体の進捗を更新
+     * コース全体の進捗を更新（最適化版）
      */
     updateCourseProgress() {
         const course = this.currentCourse;
         const progress = this.currentProgress;
-        
-        // コース名を設定
-        if (this.elements.currentCourseName) {
-            this.elements.currentCourseName.textContent = course.title;
-        }
         
         // 総レッスン数を計算
         const totalLessons = course.modules.reduce((total, module) => 
@@ -159,6 +182,53 @@ export class ProgressUI {
         const completedLessons = progress.completedLessons.length;
         const progressPercentage = totalLessons > 0 ? 
             Math.round((completedLessons / totalLessons) * 100) : 0;
+
+        // 前回の更新データと比較して変更があるかチェック
+        const currentData = {
+            courseTitle: course.title,
+            progressPercentage,
+            completedLessons,
+            totalLessons
+        };
+
+        if (this.lastUpdateData && 
+            JSON.stringify(this.lastUpdateData) === JSON.stringify(currentData)) {
+            return; // 変更がない場合はスキップ
+        }
+
+        this.lastUpdateData = currentData;
+
+        // UIOptimizerが利用可能な場合は最適化された更新を使用
+        if (this.uiOptimizer) {
+            // 進捗データを構造化してUIOptimizerに渡す
+            const progressData = {
+                percentage: progressPercentage,
+                completedLessons,
+                totalLessons,
+                moduleUpdated: false // モジュール更新は別途チェック
+            };
+
+            this.uiOptimizer.updateProgressDisplay(course.id, progressData, 'high');
+
+            // コース名の更新
+            this.uiOptimizer.updateElementContent('current-course-name', course.title, {
+                textContent: true,
+                priority: 'normal'
+            });
+        } else {
+            // フォールバック: 従来の方法
+            this.updateCourseProgressFallback(course, progress, progressPercentage, completedLessons, totalLessons);
+        }
+    }
+
+    /**
+     * コース進捗更新のフォールバック処理
+     */
+    updateCourseProgressFallback(course, progress, progressPercentage, completedLessons, totalLessons) {
+        // コース名を設定
+        if (this.elements.currentCourseName) {
+            this.elements.currentCourseName.textContent = course.title;
+        }
         
         // 進捗パーセンテージを更新
         if (this.elements.courseProgressPercentage) {
