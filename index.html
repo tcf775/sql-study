@@ -35,9 +35,29 @@
                 <section class="challenge-info">
                 <h2 id="challenge-title">データベースを初期化中...</h2>
                 <p id="challenge-description">しばらくお待ちください。</p>
-                <div class="difficulty-indicator">
-                    <span>難易度: </span>
-                    <div id="difficulty-stars"></div>
+                <div class="challenge-meta">
+                    <div class="difficulty-indicator">
+                        <span>難易度: </span>
+                        <div id="difficulty-stars"></div>
+                    </div>
+                    
+                    <!-- 問題タイプ選択 -->
+                    <div id="challenge-type-selector" class="challenge-type-selector hidden">
+                        <span class="selector-label">問題形式:</span>
+                        <div class="type-toggle">
+                            <button id="type-sql-editor" class="type-button active" data-type="challenge">
+                                <span class="type-icon">💻</span>
+                                <span class="type-text">SQLエディター</span>
+                            </button>
+                            <button id="type-word-reorder" class="type-button" data-type="word-reorder">
+                                <span class="type-icon">🧩</span>
+                                <span class="type-text">単語並び替え</span>
+                            </button>
+                        </div>
+                        <div class="type-description">
+                            <span id="type-description-text">SQLを直接入力して実行します</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 
