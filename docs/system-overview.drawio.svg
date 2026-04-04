@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="700" height="480" viewBox="-5 -5 710 490" content="&lt;mxfile host=&quot;app.diagrams.net&quot;&gt;&lt;diagram name=&quot;system-overview&quot;&gt;&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id=&quot;0&quot;/&gt;&lt;mxCell id=&quot;1&quot; parent=&quot;0&quot;/&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;&lt;/diagram&gt;&lt;/mxfile&gt;">
+  <defs>
+    <style type="text/css">
+      .box { rx: 10; ry: 10; }
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555" />
+    </marker>
+  </defs>
+  <rect x="-5" y="-5" width="710" height="490" fill="white" stroke="none"/>
+  <!-- タイトル -->
+  <text x="350" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">システム概要 - SQL学習ゲーム</text>
+  <!-- ブラウザ枠 -->
+  <rect x="10" y="50" width="680" height="420" rx="12" ry="12" fill="none" stroke="#999" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="30" y="75" font-size="14" font-weight="bold" fill="#666">ブラウザ（DuckDB WASM・完全オフライン動作）</text>
+  <!-- DuckDB WASM -->
+  <rect class="box" x="30" y="100" width="180" height="120" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+  <text x="120" y="125" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">DuckDB WASM</text>
+  <text x="120" y="145" text-anchor="middle" font-size="11" fill="#555">ブラウザ内SQLエンジン</text>
+  <line x1="45" y1="158" x2="195" y2="158" stroke="#82b366" stroke-width="0.5"/>
+  <text x="120" y="178" text-anchor="middle" font-size="10" fill="#666">duckdb-manager.js</text>
+  <text x="120" y="195" text-anchor="middle" font-size="10" fill="#666">テーブル作成・クエリ実行</text>
+  <!-- CSVデータ -->
+  <rect class="box" x="30" y="250" width="180" height="70" fill="#fff2cc" stroke="#d6b656" stroke-width="1.5"/>
+  <text x="120" y="278" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">CSVデータ</text>
+  <text x="120" y="298" text-anchor="middle" font-size="10" fill="#666">customers / products / orders ...</text>
+  <!-- 矢印: CSV → DuckDB -->
+  <line x1="120" y1="250" x2="120" y2="223" stroke="#555" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <text x="135" y="240" font-size="9" fill="#888">読み込み</text>
+  <!-- ゲームエンジン -->
+  <rect class="box" x="260" y="100" width="180" height="120" fill="#d5e8d4" stroke="#82b366" stroke-width="1.5"/>
+  <text x="350" y="125" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">ゲームエンジン</text>
+  <text x="350" y="145" text-anchor="middle" font-size="11" fill="#555">チャレンジ管理・正誤判定</text>
+  <line x1="275" y1="158" x2="425" y2="158" stroke="#82b366" stroke-width="0.5"/>
+  <text x="350" y="178" text-anchor="middle" font-size="10" fill="#666">game-engine.js</text>
+  <text x="350" y="195" text-anchor="middle" font-size="10" fill="#666">course-manager.js</text>
+  <!-- 矢印: DuckDB ←→ ゲームエンジン -->
+  <line x1="210" y1="150" x2="255" y2="150" stroke="#555" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <text x="232" y="143" font-size="9" fill="#888">SQL実行</text>
+  <!-- チャレンジJSON -->
+  <rect class="box" x="260" y="250" width="180" height="70" fill="#fff2cc" stroke="#d6b656" stroke-width="1.5"/>
+  <text x="350" y="278" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">チャレンジ定義</text>
+  <text x="350" y="298" text-anchor="middle" font-size="10" fill="#666">slides/*.json（問題・スライド）</text>
+  <!-- 矢印: JSON → ゲームエンジン -->
+  <line x1="350" y1="250" x2="350" y2="223" stroke="#555" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <!-- 適応学習 -->
+  <rect class="box" x="260" y="350" width="180" height="55" fill="#e1d5e7" stroke="#9673a6" stroke-width="1.5"/>
+  <text x="350" y="375" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">適応学習エンジン</text>
+  <text x="350" y="393" text-anchor="middle" font-size="10" fill="#666">理解度追跡・難易度調整</text>
+  <!-- 矢印: 適応学習 → ゲームエンジン -->
+  <path d="M 350 350 L 350 323" stroke="#555" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowhead)" fill="none"/>
+  <!-- UI -->
+  <rect class="box" x="490" y="100" width="180" height="120" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+  <text x="580" y="125" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">UI</text>
+  <text x="580" y="145" text-anchor="middle" font-size="11" fill="#555">画面表示・ユーザー操作</text>
+  <line x1="505" y1="158" x2="655" y2="158" stroke="#6c8ebf" stroke-width="0.5"/>
+  <text x="580" y="175" text-anchor="middle" font-size="10" fill="#666">ui-controller.js</text>
+  <text x="580" y="190" text-anchor="middle" font-size="10" fill="#666">sql-autocomplete.js</text>
+  <text x="580" y="205" text-anchor="middle" font-size="10" fill="#666">slide-manager.js</text>
+  <!-- 矢印: ゲームエンジン → UI -->
+  <line x1="440" y1="150" x2="485" y2="150" stroke="#555" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <!-- 進捗管理 -->
+  <rect class="box" x="490" y="260" width="180" height="55" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1.5"/>
+  <text x="580" y="283" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">進捗管理</text>
+  <text x="580" y="301" text-anchor="middle" font-size="10" fill="#666">localStorage に保存・復元</text>
+  <!-- 矢印: UI ←→ 進捗 -->
+  <line x1="580" y1="220" x2="580" y2="257" stroke="#555" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+  <!-- 凡例 -->
+  <rect x="500" y="360" width="12" height="12" fill="#d5e8d4" stroke="#82b366" stroke-width="1"/>
+  <text x="518" y="371" font-size="10" fill="#555">コアロジック</text>
+  <rect x="500" y="380" width="12" height="12" fill="#dae8fc" stroke="#6c8ebf" stroke-width="1"/>
+  <text x="518" y="391" font-size="10" fill="#555">UI・表示</text>
+  <rect x="500" y="400" width="12" height="12" fill="#fff2cc" stroke="#d6b656" stroke-width="1"/>
+  <text x="518" y="411" font-size="10" fill="#555">データソース</text>
+  <rect x="500" y="420" width="12" height="12" fill="#e1d5e7" stroke="#9673a6" stroke-width="1"/>
+  <text x="518" y="431" font-size="10" fill="#555">学習支援</text>
+</svg>

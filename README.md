@@ -17,28 +17,7 @@ DuckDB WASMを使用したブラウザ完結型のSQL学習ゲームです。
 
 ## システム概要
 
-```
-ブラウザ
-├── index.html                  # エントリーポイント
-│
-├── DuckDB WASM                 # ブラウザ内SQLエンジン
-│   ├── duckdb-manager.js       #   DB初期化・CSVからテーブル作成・クエリ実行
-│   └── data/*.csv              #   顧客・商品・注文などのサンプルデータ
-│
-├── ゲームエンジン
-│   ├── game-engine.js          #   チャレンジ管理・正誤判定・スコア計算
-│   ├── course-manager.js       #   コース選択・進行管理
-│   ├── adaptive-learning.js    #   適応的学習（理解度追跡・難易度調整）
-│   └── progress-manager.js     #   学習進捗の保存・復元（localStorage）
-│
-├── UI
-│   ├── ui-controller.js        #   メイン画面制御
-│   ├── sql-autocomplete.js     #   SQLオートコンプリート
-│   ├── slide-manager.js        #   スライド表示（チャレンジ説明）
-│   └── course-ui.js            #   コース選択画面
-│
-└── slides/*.json               # チャレンジ・スライド定義データ
-```
+![システム概要](docs/system-overview.drawio.svg)
 
 ### データベース構造
 
