@@ -1,12 +1,12 @@
 # 🎮 SQL学習ゲーム
 
-[![Deploy to GitHub Pages](https://github.com/YOUR_USERNAME/sql-learning-game/actions/workflows/deploy.yml/badge.svg)](https://github.com/YOUR_USERNAME/sql-learning-game/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/tcf775/sql-study/actions/workflows/deploy.yml/badge.svg)](https://github.com/tcf775/sql-study/actions/workflows/deploy.yml)
 
 DuckDB WASMを使用したブラウザ完結型のSQL学習ゲームです。
 
 ## 🚀 デモ
 
-**[🎮 今すぐプレイ！](https://YOUR_USERNAME.github.io/sql-learning-game/)**
+**[🎮 今すぐプレイ！](https://tcf775.github.io/sql-study/)**
 
 ## ✨ 特徴
 
@@ -56,8 +56,8 @@ DuckDB WASMを使用したブラウザ完結型のSQL学習ゲームです。
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/YOUR_USERNAME/sql-learning-game.git
-cd sql-learning-game
+git clone https://github.com/tcf775/sql-study.git
+cd sql-study
 
 # HTTPサーバーで起動（必須 - CORS制限のため）
 python -m http.server 8000
@@ -72,7 +72,7 @@ php -S localhost:8000
 ## 📁 ファイル構成
 
 ```
-sql-learning-game/
+sql-study/
 ├── index.html              # メインページ
 ├── css/
 │   ├── main.css           # メインスタイル
@@ -115,4 +115,4 @@ sql-learning-game/
 
 ---
 
-**[🎮 今すぐプレイして、SQLをマスターしよう！](https://YOUR_USERNAME.github.io/sql-learning-game/)**
+**[🎮 今すぐプレイして、SQLをマスターしよう！](https://tcf775.github.io/sql-study/)**
